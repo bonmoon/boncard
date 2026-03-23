@@ -1,0 +1,2889 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2dd4a8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>手机卡片管家</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --mint: #2dd4a8;
+      --mint-deep: #179d78;
+      --bg: #f6faf8;
+      --bg-soft: #eef5f2;
+      --card: rgba(255, 255, 255, 0.88);
+      --card-strong: rgba(255, 255, 255, 0.96);
+      --text: #16352d;
+      --text-soft: #688078;
+      --line: rgba(22, 53, 45, 0.08);
+      --danger: #e45a5a;
+      --warning: #f3a61f;
+      --success: #1fa971;
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-xl: 28px;
+      --shadow: 0 16px 40px rgba(23, 61, 51, 0.08);
+      --card-shadow: 0 20px 44px rgba(18, 54, 46, 0.16);
+      --safe-top: env(safe-area-inset-top, 16px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body {
+      font-family: "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(45, 212, 168, 0.12), transparent 24%),
+        radial-gradient(circle at top left, rgba(255, 216, 194, 0.42), transparent 28%),
+        linear-gradient(180deg, #fbfdfc 0%, var(--bg) 42%, var(--bg-soft) 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: none;
+      background: none;
+      color: inherit;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: calc(var(--safe-top) + 8px) 16px calc(86px + var(--safe-bottom));
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .header-title {
+      font-size: 30px;
+      line-height: 1.05;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.18s ease, background 0.18s ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .icon-btn.primary {
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      color: white;
+    }
+
+    .icon-btn:active,
+    .nav-btn:active,
+    .segmented-btn:active,
+    .sheet-btn:active,
+    .card-action:active,
+    .sound-chip:active,
+    .list-btn:active {
+      transform: scale(0.97);
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tab-page {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tab-page.active {
+      display: flex;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 16px 0;
+    }
+
+    .panel-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-copy {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+
+    .panel-side {
+      font-size: 12px;
+      color: var(--text-soft);
+      white-space: nowrap;
+    }
+
+    .segmented {
+      margin: 14px 16px 10px;
+      padding: 4px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      border-radius: 16px;
+      background: rgba(22, 53, 45, 0.06);
+    }
+
+    .segmented-btn {
+      height: 38px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .segmented-btn.active {
+      background: var(--card-strong);
+      color: var(--text);
+      box-shadow: 0 8px 20px rgba(23, 61, 51, 0.08);
+    }
+
+    .cards-pager {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .cards-pager::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cards-view {
+      min-width: 100%;
+      scroll-snap-align: start;
+      padding: 0 16px 16px;
+    }
+
+    .stack-view {
+      overflow: visible;
+    }
+
+    .wallet-stack {
+      position: relative;
+    }
+
+    .wallet-card {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 220px;
+      border-radius: 24px;
+      overflow: hidden;
+      cursor: pointer;
+      color: white;
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      transition: transform 0.18s ease;
+    }
+
+    .wallet-card:active {
+      transform: scale(0.985);
+    }
+
+    .wallet-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .wallet-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.14) 100%);
+      pointer-events: none;
+    }
+
+    .wallet-card-body {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .wallet-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .wallet-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      backdrop-filter: blur(8px);
+    }
+
+    .wallet-name {
+      margin-top: 10px;
+      font-size: 23px;
+      line-height: 1.12;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      max-width: 220px;
+    }
+
+    .wallet-meta {
+      margin-top: 7px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.84);
+    }
+
+    .wallet-emoji {
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .wallet-bottom {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      align-items: end;
+    }
+
+    .wallet-stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.74);
+      margin-bottom: 4px;
+    }
+
+    .wallet-stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .wallet-stat-value.small {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .empty-state {
+      padding: 28px 18px;
+      border-radius: 22px;
+      text-align: center;
+      border: 1px dashed var(--line);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .empty-state strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    .list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .list-card,
+    .reminder-item,
+    .settings-row,
+    .archive-card,
+    .search-result {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(22, 53, 45, 0.06);
+      border-radius: 20px;
+      box-shadow: 0 10px 24px rgba(23, 61, 51, 0.05);
+    }
+
+    .list-card,
+    .archive-card,
+    .search-result {
+      padding: 14px;
+    }
+
+    .list-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .list-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .list-copy {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(45, 212, 168, 0.1);
+      color: var(--mint-deep);
+      white-space: nowrap;
+    }
+
+    .pill.warning {
+      background: rgba(243, 166, 31, 0.12);
+      color: #ae7100;
+    }
+
+    .pill.danger {
+      background: rgba(228, 90, 90, 0.12);
+      color: #b64040;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .list-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .list-btn,
+    .sheet-btn,
+    .card-action {
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease;
+    }
+
+    .list-btn,
+    .sheet-btn.secondary,
+    .card-action.secondary {
+      background: rgba(22, 53, 45, 0.06);
+      color: var(--text);
+    }
+
+    .sheet-btn.primary,
+    .card-action.primary,
+    .list-btn.primary {
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      color: white;
+    }
+
+    .list-btn.danger,
+    .card-action.danger {
+      color: var(--danger);
+    }
+
+    .summary-row {
+      padding: 0 16px 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .summary-box {
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 18px;
+      border: 1px solid rgba(22, 53, 45, 0.06);
+    }
+
+    .summary-box strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .summary-box span {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+
+    .reminder-list,
+    .settings-list,
+    .archive-list,
+    .search-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 0 16px 16px;
+    }
+
+    .reminder-item {
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .reminder-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .reminder-copy {
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .reminder-badge {
+      min-width: 52px;
+      padding: 10px 8px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      align-self: flex-start;
+      background: rgba(45, 212, 168, 0.1);
+      color: var(--mint-deep);
+    }
+
+    .reminder-badge.warning {
+      background: rgba(243, 166, 31, 0.12);
+      color: #ae7100;
+    }
+
+    .reminder-badge.danger {
+      background: rgba(228, 90, 90, 0.12);
+      color: #b64040;
+    }
+
+    .settings-row {
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .settings-label {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .settings-copy {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.45;
+      max-width: 240px;
+    }
+
+    .toggle {
+      width: 52px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(22, 53, 45, 0.14);
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 4px 12px rgba(22, 53, 45, 0.15);
+      transition: transform 0.18s ease;
+    }
+
+    .toggle.on {
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+    }
+
+    .toggle.on::after {
+      transform: translateX(20px);
+    }
+
+    .action-grid {
+      padding: 0 16px 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .action-box {
+      padding: 16px 14px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(22, 53, 45, 0.06);
+      cursor: pointer;
+      text-align: left;
+      min-height: 112px;
+      box-shadow: 0 10px 24px rgba(23, 61, 51, 0.05);
+    }
+
+    .action-box strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .action-box span {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.55;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      padding: 10px 16px calc(12px + var(--safe-bottom));
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(18px);
+      border-top: 1px solid rgba(22, 53, 45, 0.06);
+      z-index: 60;
+    }
+
+    .nav-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 6px;
+      border-radius: 18px;
+      cursor: pointer;
+      color: #91a49e;
+      transition: background 0.18s ease, color 0.18s ease;
+      position: relative;
+    }
+
+    .nav-btn.active {
+      color: var(--text);
+      background: rgba(45, 212, 168, 0.08);
+    }
+
+    .nav-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(22, 53, 45, 0.05);
+    }
+
+    .nav-label {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: 8px;
+      right: 26px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: var(--danger);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay,
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 24, 20, 0.3);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 110;
+      padding: 0 12px;
+    }
+
+    .overlay.active,
+    .sheet-overlay.active {
+      display: flex;
+    }
+
+    .sheet {
+      width: 100%;
+      max-width: 430px;
+      max-height: min(88vh, 780px);
+      overflow-y: auto;
+      background: #fffefc;
+      border-radius: 28px 28px 0 0;
+      padding: 16px 16px calc(18px + var(--safe-bottom));
+      transform: translateY(100%);
+      transition: transform 0.24s ease;
+    }
+
+    .overlay.active .sheet,
+    .sheet-overlay.active .sheet {
+      transform: translateY(0);
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(22, 53, 45, 0.16);
+      margin: 0 auto 14px;
+    }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .sheet-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .sheet-copy {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .sheet-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      background: rgba(22, 53, 45, 0.06);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .detail-card {
+      height: 228px;
+      border-radius: 24px;
+      overflow: hidden;
+      color: white;
+      position: relative;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 14px;
+    }
+
+    .detail-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.16) 100%);
+    }
+
+    .detail-card-body {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .detail-box {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(22, 53, 45, 0.05);
+    }
+
+    .detail-box strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .detail-box span {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+
+    .detail-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .form-input,
+    .form-textarea,
+    .search-input,
+    .chat-input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(22, 53, 45, 0.1);
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+
+    .form-textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .search-input:focus,
+    .chat-input:focus {
+      border-color: rgba(45, 212, 168, 0.44);
+      box-shadow: 0 0 0 4px rgba(45, 212, 168, 0.12);
+    }
+
+    .type-row,
+    .theme-row,
+    .sound-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .type-row::-webkit-scrollbar,
+    .theme-row::-webkit-scrollbar,
+    .sound-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .type-chip,
+    .theme-chip,
+    .sound-chip {
+      border-radius: 18px;
+      border: 1px solid rgba(22, 53, 45, 0.1);
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .type-chip {
+      min-width: 104px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .type-chip.active,
+    .theme-chip.active,
+    .sound-chip.active {
+      border-color: rgba(45, 212, 168, 0.36);
+      box-shadow: 0 0 0 3px rgba(45, 212, 168, 0.1);
+    }
+
+    .type-chip strong {
+      display: block;
+      font-size: 14px;
+      margin: 8px 0 4px;
+    }
+
+    .type-chip span {
+      font-size: 11px;
+      line-height: 1.45;
+      color: var(--text-soft);
+    }
+
+    .theme-chip {
+      width: 72px;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .theme-preview {
+      height: 46px;
+      border-radius: 14px;
+      margin-bottom: 7px;
+    }
+
+    .theme-chip span,
+    .sound-chip span {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .sound-chip {
+      min-width: 88px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .sound-chip strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .upload-box {
+      min-height: 116px;
+      border-radius: 22px;
+      border: 2px dashed rgba(22, 53, 45, 0.12);
+      background: rgba(22, 53, 45, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .upload-box.has-image .upload-copy {
+      background: rgba(255, 255, 255, 0.84);
+      padding: 10px 12px;
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .upload-copy strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .upload-copy span {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+
+    .search-input {
+      margin-bottom: 12px;
+    }
+
+    .search-list {
+      padding: 0;
+    }
+
+    .search-result {
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .chat-panel {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(255, 216, 194, 0.42), transparent 26%),
+        linear-gradient(180deg, #fffefc 0%, #f4faf7 56%, #eef4f1 100%);
+      transform: translateX(100%);
+      transition: transform 0.26s ease;
+      z-index: 120;
+    }
+
+    .chat-panel.active {
+      transform: translateX(0);
+    }
+
+    .chat-inner {
+      max-width: 430px;
+      height: 100%;
+      margin: 0 auto;
+      padding: calc(var(--safe-top) + 8px) 16px calc(88px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .chat-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .chat-copy {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .chat-tags {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 12px;
+    }
+
+    .chat-tags::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chat-tag {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(22, 53, 45, 0.08);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chat-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .chat-bubble {
+      max-width: 84%;
+      padding: 13px 14px;
+      border-radius: 22px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      box-shadow: 0 10px 24px rgba(23, 61, 51, 0.05);
+      word-break: break-word;
+    }
+
+    .chat-bubble.user {
+      margin-left: auto;
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      color: white;
+      border-bottom-right-radius: 8px;
+    }
+
+    .chat-bubble.assistant {
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      border-bottom-left-radius: 8px;
+    }
+
+    .chat-input-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 16px calc(12px + var(--safe-bottom));
+      background: rgba(255, 255, 255, 0.94);
+      border-top: 1px solid rgba(22, 53, 45, 0.06);
+      backdrop-filter: blur(16px);
+    }
+
+    .chat-input-row {
+      max-width: 430px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chat-input {
+      border-radius: 999px;
+      flex: 1;
+    }
+
+    .chat-send {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .toast {
+      position: fixed;
+      top: calc(var(--safe-top) + 14px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-110px);
+      background: rgba(22, 53, 45, 0.94);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.45;
+      max-width: calc(100% - 32px);
+      text-align: center;
+      z-index: 150;
+      transition: transform 0.22s ease;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 380px) {
+      .form-row,
+      .detail-grid,
+      .summary-row,
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wallet-name {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div>
+        <div class="header-title">手机卡片管家</div>
+        <div class="header-subtitle" id="headerSubtitle">像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。</div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" type="button" onclick="openSearch()" aria-label="搜索">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20 17 17"></path>
+          </svg>
+        </button>
+        <button class="icon-btn" type="button" onclick="openChat()" aria-label="AI 助手">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 10h10"></path>
+            <path d="M7 14h6"></path>
+            <path d="M5 19l1.6-2.4A7 7 0 0 1 5 12a7 7 0 1 1 14 0 7 7 0 0 1-7 7H5Z"></path>
+          </svg>
+        </button>
+        <button class="icon-btn primary" type="button" onclick="openCardForm()" aria-label="新增卡片">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M12 5v14"></path>
+            <path d="M5 12h14"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="tab-page active" id="cardsTab">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">我的卡片</div>
+              <div class="panel-copy">主页只保留卡片本身。左右切换卡堆和列表，点开再看详情。</div>
+            </div>
+            <div class="panel-side" id="cardCountMeta">0 张</div>
+          </div>
+
+          <div class="segmented">
+            <button class="segmented-btn active" id="viewTabStack" type="button" onclick="goToCardView('stack')">卡堆</button>
+            <button class="segmented-btn" id="viewTabList" type="button" onclick="goToCardView('list')">列表</button>
+          </div>
+
+          <div class="cards-pager" id="cardsPager">
+            <div class="cards-view stack-view">
+              <div class="wallet-stack" id="walletStack"></div>
+            </div>
+            <div class="cards-view">
+              <div class="list-view" id="cardsList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="remindersTab">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">提醒模块</div>
+              <div class="panel-copy">课程余量、即将到期、订阅续费都只放在这里，不再出现在主页。</div>
+            </div>
+            <div class="panel-side" id="reminderMeta">0 条</div>
+          </div>
+          <div class="summary-row">
+            <div class="summary-box">
+              <strong id="urgentCount">0</strong>
+              <span>紧急提醒</span>
+            </div>
+            <div class="summary-box">
+              <strong id="windowCount">14 天</strong>
+              <span>默认提醒窗口</span>
+            </div>
+          </div>
+          <div class="reminder-list" id="reminderList"></div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="settingsTab">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">设置与数据</div>
+              <div class="panel-copy">把归档、备份、通知和音效偏好合并在一个地方。</div>
+            </div>
+            <div class="panel-side" id="syncMeta">Local</div>
+          </div>
+          <div class="settings-list" id="settingsList"></div>
+          <div class="action-grid">
+            <button class="action-box" type="button" onclick="exportBackup()">
+              <strong>导出备份</strong>
+              <span>把当前卡片与设置导出为 JSON，方便后续迁移或上传云端。</span>
+            </button>
+            <button class="action-box" type="button" onclick="document.getElementById('backupInput').click()">
+              <strong>导入恢复</strong>
+              <span>从导出的 JSON 里恢复本地数据。</span>
+            </button>
+            <button class="action-box" type="button" onclick="requestNotificationPermission()">
+              <strong>通知权限</strong>
+              <span id="permissionStatus">检查当前浏览器通知权限。</span>
+            </button>
+            <button class="action-box" type="button" onclick="resetDemoData()">
+              <strong>重置 Demo</strong>
+              <span>恢复默认演示卡片，方便继续调界面和交互。</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">归档卡片</div>
+              <div class="panel-copy">软删除统一放这里，需要时再恢复。</div>
+            </div>
+            <div class="panel-side" id="archiveMeta">0 张</div>
+          </div>
+          <div class="archive-list" id="archiveList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-row">
+      <button class="nav-btn active" id="navCards" type="button" onclick="switchTab('cards')">
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="14" rx="3"></rect>
+            <path d="M2 9h20"></path>
+          </svg>
+        </span>
+        <span class="nav-label">卡片</span>
+      </button>
+      <button class="nav-btn" id="navReminders" type="button" onclick="switchTab('reminders')">
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 8v4l3 2"></path>
+            <circle cx="12" cy="12" r="9"></circle>
+          </svg>
+        </span>
+        <span class="nav-badge" id="reminderBadge">0</span>
+        <span class="nav-label">提醒</span>
+      </button>
+      <button class="nav-btn" id="navSettings" type="button" onclick="switchTab('settings')">
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v3"></path>
+            <path d="M12 18v3"></path>
+            <path d="M3 12h3"></path>
+            <path d="M18 12h3"></path>
+            <circle cx="12" cy="12" r="3.5"></circle>
+          </svg>
+        </span>
+        <span class="nav-label">设置</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="overlay" id="searchOverlay" onclick="closeSearch(event)">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div>
+          <div class="sheet-title">搜索卡片</div>
+          <div class="sheet-copy">搜名称、分类、备注或卡片类型。</div>
+        </div>
+        <button class="sheet-close" type="button" onclick="forceCloseSearch()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <input class="search-input" id="searchInput" type="text" placeholder="搜索卡片名称、分类、备注">
+      <div class="search-list" id="searchResults"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="detailOverlay" onclick="closeDetail(event)">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div>
+          <div class="sheet-title">卡片详情</div>
+          <div class="sheet-copy">点卡即播音效，详细信息和操作收进这里。</div>
+        </div>
+        <button class="sheet-close" type="button" onclick="forceCloseDetail()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="formOverlay" onclick="closeForm(event)">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div>
+          <div class="sheet-title" id="formTitle">新增卡片</div>
+          <div class="sheet-copy">支持自定义卡面图、卡片音效、类型信息和备注。</div>
+        </div>
+        <button class="sheet-close" type="button" onclick="forceCloseForm()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form class="form-grid" id="cardForm">
+        <div class="form-group">
+          <label class="form-label">卡片类型</label>
+          <div class="type-row" id="typeRow"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="cardName">卡片名称</label>
+          <input class="form-input" id="cardName" type="text" placeholder="例如：HipHop 课 / ChatGPT Plus" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="cardCategory">分类</label>
+            <input class="form-input" id="cardCategory" type="text" placeholder="舞蹈 / AI 工具 / 健身">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="dueDateInput" id="dateLabel">到期日期</label>
+            <input class="form-input" id="dueDateInput" type="date" required>
+          </div>
+        </div>
+
+        <div class="form-row" id="classFields">
+          <div class="form-group">
+            <label class="form-label" for="totalCount">总次数</label>
+            <input class="form-input" id="totalCount" type="number" min="1" placeholder="12">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="remainingCount">剩余次数</label>
+            <input class="form-input" id="remainingCount" type="number" min="0" placeholder="8">
+          </div>
+        </div>
+
+        <div class="form-row" id="costFields">
+          <div class="form-group">
+            <label class="form-label" for="costInput" id="costLabel">金额</label>
+            <input class="form-input" id="costInput" type="number" min="0" step="0.01" placeholder="99">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="currencyInput">币种</label>
+            <select class="form-input" id="currencyInput">
+              <option value="CNY">CNY</option>
+              <option value="USD">USD</option>
+              <option value="HKD">HKD</option>
+              <option value="JPY">JPY</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" id="autoRenewWrap">
+          <label class="form-label" for="autoRenewInput">订阅状态</label>
+          <select class="form-input" id="autoRenewInput">
+            <option value="true">自动续费</option>
+            <option value="false">手动续费</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">卡片主题</label>
+          <div class="theme-row" id="themeRow"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">卡片音效</label>
+          <div class="sound-row" id="soundRow"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">卡面图片</label>
+          <div class="upload-box" id="imageUploadBox" onclick="document.getElementById('imageInput').click()">
+            <div class="upload-copy">
+              <strong>上传自定义卡面</strong>
+              <span>点一下上传图片，没有图片时会自动使用主题色卡面。</span>
+            </div>
+          </div>
+          <input id="imageInput" class="hidden" type="file" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="cardNotes">备注</label>
+          <textarea class="form-textarea" id="cardNotes" placeholder="写下地址、账号、使用习惯或续费备注。"></textarea>
+        </div>
+
+        <div class="form-row">
+          <button class="sheet-btn secondary" type="button" onclick="forceCloseForm()">取消</button>
+          <button class="sheet-btn primary" type="submit" id="submitBtn">保存卡片</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <section class="chat-panel" id="chatPanel">
+    <div class="chat-inner">
+      <div class="chat-head">
+        <div>
+          <div class="chat-title">AI 卡片助理</div>
+          <div class="chat-copy">我会基于当前本地卡片数据回答问题，暂时不把它做成一个单独底部模块。</div>
+        </div>
+        <button class="sheet-close" type="button" onclick="closeChat()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="chat-tags">
+        <button class="chat-tag" type="button" onclick="askSuggestion('最近哪些卡快到期？')">最近哪些卡快到期？</button>
+        <button class="chat-tag" type="button" onclick="askSuggestion('课程卡还剩多少次？')">课程卡还剩多少次？</button>
+        <button class="chat-tag" type="button" onclick="askSuggestion('每月订阅一共多少钱？')">每月订阅一共多少钱？</button>
+      </div>
+
+      <div class="chat-scroll" id="chatMessages"></div>
+    </div>
+    <div class="chat-input-bar">
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" type="text" placeholder="问：本周快到期的有哪些？">
+        <button class="chat-send" type="button" onclick="sendChatMessage()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2 11 13"></path>
+            <path d="m22 2-7 20-4-9-9-4 20-7Z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <input class="hidden" id="backupInput" type="file" accept="application/json">
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEYS = {
+      cards: 'cardvault_cards_v4',
+      settings: 'cardvault_settings_v4'
+    };
+
+    const TYPE_META = {
+      class_pass: { label: '课程卡', icon: '🎫', helper: '课程次数 / 到期日期' },
+      membership: { label: '会员卡', icon: '💳', helper: '会员状态 / 到期日期' },
+      subscription: { label: '订阅', icon: '🔄', helper: '续费日期 / 金额' }
+    };
+
+    const THEME_PRESETS = [
+      {
+        id: 'mint',
+        name: '薄荷',
+        background: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        accent: '#179d78'
+      },
+      {
+        id: 'rose',
+        name: '莓粉',
+        background: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
+        accent: '#cf5f88'
+      },
+      {
+        id: 'amber',
+        name: '琥珀',
+        background: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
+        accent: '#bc7f11'
+      },
+      {
+        id: 'ocean',
+        name: '海盐',
+        background: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
+        accent: '#2c6bb2'
+      },
+      {
+        id: 'forest',
+        name: '杉林',
+        background: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
+        accent: '#205847'
+      }
+    ];
+
+    const SOUND_PRESETS = [
+      { id: 'bgm1', name: 'Chime 1', src: 'Assets/bgm1.mp3' },
+      { id: 'bgm2', name: 'Chime 2', src: 'Assets/bgm2.mp3' },
+      { id: 'bgm3', name: 'Chime 3', src: 'Assets/bgm3.mp3' },
+      { id: 'bgm4', name: 'Chime 4', src: 'Assets/bgm4.mp3' },
+      { id: 'bgm5', name: 'Chime 5', src: 'Assets/bgm5.mp3' },
+      { id: 'bgm6', name: 'Chime 6', src: 'Assets/bgm6.mp3' },
+      { id: 'bgm7', name: 'Chime 7', src: 'Assets/bgm7.mp3' }
+    ];
+
+    const SAMPLE_CARDS = [
+      {
+        id: 'dance-pass',
+        type: 'class_pass',
+        name: 'HipHop 舞蹈课',
+        category: '舞蹈',
+        remainingCount: 8,
+        totalCount: 12,
+        expiryDate: '2026-04-15',
+        notes: '每周五晚 8 点，点开卡片会播放自定义音效。',
+        themeId: 'rose',
+        backgroundColor: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
+        accentColor: '#cf5f88',
+        cardImage: null,
+        soundId: 'bgm2',
+        emoji: '💃',
+        autoRenew: false,
+        cost: 0,
+        currency: 'CNY',
+        createdAt: '2026-02-01T10:00:00.000Z',
+        updatedAt: '2026-03-20T10:00:00.000Z',
+        isArchived: false
+      },
+      {
+        id: 'pilates-pass',
+        type: 'class_pass',
+        name: '普拉提核心课',
+        category: '运动',
+        remainingCount: 2,
+        totalCount: 6,
+        expiryDate: '2026-03-29',
+        notes: '只剩两节，提醒会在提醒模块展示。',
+        themeId: 'mint',
+        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        accentColor: '#179d78',
+        cardImage: null,
+        soundId: 'bgm4',
+        emoji: '🧘',
+        autoRenew: false,
+        cost: 0,
+        currency: 'CNY',
+        createdAt: '2026-02-22T10:00:00.000Z',
+        updatedAt: '2026-03-22T10:00:00.000Z',
+        isArchived: false
+      },
+      {
+        id: 'gym-membership',
+        type: 'membership',
+        name: 'FitLab 健身年卡',
+        category: '健身',
+        remainingCount: 0,
+        totalCount: 0,
+        expiryDate: '2026-05-06',
+        notes: '会员卡详情里可以直接编辑到期时间和备注。',
+        themeId: 'forest',
+        backgroundColor: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
+        accentColor: '#205847',
+        cardImage: null,
+        soundId: 'bgm1',
+        emoji: '🏋️',
+        autoRenew: false,
+        cost: 699,
+        currency: 'CNY',
+        createdAt: '2025-12-12T10:00:00.000Z',
+        updatedAt: '2026-03-10T10:00:00.000Z',
+        isArchived: false
+      },
+      {
+        id: 'chatgpt-sub',
+        type: 'subscription',
+        name: 'ChatGPT Plus',
+        category: 'AI 工具',
+        remainingCount: 0,
+        totalCount: 0,
+        renewalDate: '2026-04-01',
+        notes: '订阅类卡片会在提醒页显示续费提醒。',
+        themeId: 'amber',
+        backgroundColor: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
+        accentColor: '#bc7f11',
+        cardImage: null,
+        soundId: 'bgm6',
+        emoji: '🤖',
+        autoRenew: true,
+        cost: 20,
+        currency: 'USD',
+        createdAt: '2026-01-15T10:00:00.000Z',
+        updatedAt: '2026-03-18T10:00:00.000Z',
+        isArchived: false
+      },
+      {
+        id: 'notion-sub',
+        type: 'subscription',
+        name: 'Notion AI',
+        category: '效率工具',
+        remainingCount: 0,
+        totalCount: 0,
+        renewalDate: '2026-03-27',
+        notes: '这里用于演示临近续费提醒。',
+        themeId: 'ocean',
+        backgroundColor: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
+        accentColor: '#2c6bb2',
+        cardImage: null,
+        soundId: 'bgm5',
+        emoji: '📝',
+        autoRenew: true,
+        cost: 98,
+        currency: 'CNY',
+        createdAt: '2026-02-15T10:00:00.000Z',
+        updatedAt: '2026-03-23T10:00:00.000Z',
+        isArchived: false
+      },
+      {
+        id: 'archive-swim',
+        type: 'membership',
+        name: '旧游泳馆会员',
+        category: '归档示例',
+        remainingCount: 0,
+        totalCount: 0,
+        expiryDate: '2025-12-31',
+        notes: '归档卡片保留在设置页。',
+        themeId: 'mint',
+        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        accentColor: '#179d78',
+        cardImage: null,
+        soundId: 'bgm3',
+        emoji: '🏊',
+        autoRenew: false,
+        cost: 399,
+        currency: 'CNY',
+        createdAt: '2025-08-15T10:00:00.000Z',
+        updatedAt: '2026-01-08T10:00:00.000Z',
+        isArchived: true
+      }
+    ];
+
+    const state = {
+      cards: [],
+      settings: {},
+      activeTab: 'cards',
+      cardView: 'stack',
+      editingCardId: null,
+      detailCardId: null,
+      selectedType: 'class_pass',
+      selectedThemeId: 'mint',
+      selectedSoundId: 'bgm1',
+      uploadedImage: null,
+      searchQuery: '',
+      chatOpen: false,
+      chatMessages: []
+    };
+
+    let currentAudio = null;
+
+    function getDefaultSettings() {
+      return {
+        soundEnabled: true,
+        remindersEnabled: true,
+        reminderWindow: 14,
+        lastExportAt: null
+      };
+    }
+
+    function getTheme(themeId) {
+      return THEME_PRESETS.find((item) => item.id === themeId) || THEME_PRESETS[0];
+    }
+
+    function getSound(soundId) {
+      return SOUND_PRESETS.find((item) => item.id === soundId) || SOUND_PRESETS[0];
+    }
+
+    function normalizeCard(card) {
+      const theme = getTheme(card.themeId || 'mint');
+      const type = card.type || 'membership';
+      const normalized = {
+        id: String(card.id || Date.now()),
+        type,
+        name: card.name || '未命名卡片',
+        category: card.category || '',
+        remainingCount: Number(card.remainingCount || 0),
+        totalCount: Number(card.totalCount || 0),
+        expiryDate: card.expiryDate || '',
+        renewalDate: card.renewalDate || '',
+        notes: card.notes || '',
+        themeId: card.themeId || theme.id,
+        backgroundColor: card.backgroundColor || theme.background,
+        accentColor: card.accentColor || theme.accent,
+        cardImage: card.cardImage || null,
+        soundId: card.soundId || 'bgm1',
+        emoji: card.emoji || defaultEmoji(type),
+        autoRenew: type === 'subscription' ? card.autoRenew !== false : false,
+        cost: Number(card.cost || 0),
+        currency: card.currency || 'CNY',
+        createdAt: card.createdAt || new Date().toISOString(),
+        updatedAt: card.updatedAt || new Date().toISOString(),
+        isArchived: Boolean(card.isArchived)
+      };
+
+      if (type === 'subscription' && !normalized.renewalDate && normalized.expiryDate) {
+        normalized.renewalDate = normalized.expiryDate;
+      }
+      if (type !== 'subscription' && !normalized.expiryDate && normalized.renewalDate) {
+        normalized.expiryDate = normalized.renewalDate;
+      }
+      return normalized;
+    }
+
+    function defaultEmoji(type) {
+      if (type === 'class_pass') return '🎫';
+      if (type === 'subscription') return '🔄';
+      return '💳';
+    }
+
+    function getCardDate(card) {
+      return card.type === 'subscription' ? card.renewalDate : card.expiryDate;
+    }
+
+    function getCardDateLabel(card) {
+      return card.type === 'subscription' ? '续费日期' : '到期日期';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '未设置';
+      return new Date(dateStr).toLocaleDateString('zh-CN', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+
+    function getDaysUntil(dateStr) {
+      if (!dateStr) return Number.POSITIVE_INFINITY;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const target = new Date(dateStr);
+      target.setHours(0, 0, 0, 0);
+      return Math.ceil((target - today) / 86400000);
+    }
+
+    function formatCurrency(value, currency) {
+      if (!value) return currency === 'USD' ? '$0' : currency + ' 0';
+      if (currency === 'USD') {
+        return '$' + Number(value).toFixed(value % 1 === 0 ? 0 : 2);
+      }
+      return currency + ' ' + Number(value).toFixed(value % 1 === 0 ? 0 : 2);
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function normalizeText(text) {
+      return String(text || '').trim().toLowerCase();
+    }
+
+    function loadState() {
+      const rawCards = localStorage.getItem(STORAGE_KEYS.cards);
+      const rawSettings = localStorage.getItem(STORAGE_KEYS.settings);
+
+      try {
+        state.cards = rawCards ? JSON.parse(rawCards).map(normalizeCard) : SAMPLE_CARDS.map(normalizeCard);
+      } catch (error) {
+        state.cards = SAMPLE_CARDS.map(normalizeCard);
+      }
+
+      try {
+        state.settings = rawSettings ? { ...getDefaultSettings(), ...JSON.parse(rawSettings) } : getDefaultSettings();
+      } catch (error) {
+        state.settings = getDefaultSettings();
+      }
+
+      if (!rawCards) persistCards();
+      if (!rawSettings) persistSettings();
+
+      state.chatMessages = [
+        {
+          role: 'assistant',
+          content: '我会基于当前卡片来回答。你可以问我哪些卡快到期、课程还剩多少次、每月订阅多少钱。'
+        }
+      ];
+    }
+
+    function persistCards() {
+      localStorage.setItem(STORAGE_KEYS.cards, JSON.stringify(state.cards));
+    }
+
+    function persistSettings() {
+      localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(state.settings));
+    }
+
+    function getActiveCards() {
+      return state.cards.filter((card) => !card.isArchived);
+    }
+
+    function getArchivedCards() {
+      return state.cards.filter((card) => card.isArchived);
+    }
+
+    function sortCards(cards) {
+      return [...cards].sort((a, b) => {
+        const aUrgency = getSortWeight(a);
+        const bUrgency = getSortWeight(b);
+        if (aUrgency !== bUrgency) return aUrgency - bUrgency;
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      });
+    }
+
+    function getSortWeight(card) {
+      const days = getDaysUntil(getCardDate(card));
+      if (card.type === 'class_pass' && card.remainingCount <= 2) {
+        return -2 + days / 1000;
+      }
+      return days;
+    }
+
+    function getStatus(card) {
+      const days = getDaysUntil(getCardDate(card));
+      if (days < 0) return { label: '已过期', tone: 'danger' };
+      if (card.type === 'class_pass' && card.remainingCount <= 2) return { label: '余量偏少', tone: 'warning' };
+      if (days === 0) return { label: '今天', tone: 'danger' };
+      if (days <= 3) return { label: days + ' 天内', tone: 'danger' };
+      if (days <= 14) return { label: days + ' 天内', tone: 'warning' };
+      return { label: '正常', tone: 'normal' };
+    }
+
+    function buildReminders() {
+      const reminders = [];
+      const windowDays = state.settings.reminderWindow;
+      getActiveCards().forEach((card) => {
+        const days = getDaysUntil(getCardDate(card));
+
+        if (card.type === 'class_pass' && card.remainingCount <= 2) {
+          reminders.push({
+            id: card.id + '-count',
+            cardId: card.id,
+            title: card.name,
+            body: `课程只剩 ${card.remainingCount} / ${card.totalCount}，可以考虑提前续课。`,
+            score: card.remainingCount + ' 次',
+            tone: card.remainingCount === 0 ? 'danger' : 'warning'
+          });
+        }
+
+        if (card.type === 'class_pass' && days <= windowDays) {
+          reminders.push({
+            id: card.id + '-expiry',
+            cardId: card.id,
+            title: card.name,
+            body: days < 0 ? '课程卡已经过期。' : `${days === 0 ? '今天' : days + ' 天后'}到期。`,
+            score: days < 0 ? '过期' : (days === 0 ? '今天' : days + ' 天'),
+            tone: days <= 0 ? 'danger' : 'warning'
+          });
+        }
+
+        if (card.type === 'membership' && days <= windowDays) {
+          reminders.push({
+            id: card.id + '-membership',
+            cardId: card.id,
+            title: card.name,
+            body: days < 0 ? '会员卡已经过期。' : `${days === 0 ? '今天' : days + ' 天后'}到期。`,
+            score: days < 0 ? '过期' : (days === 0 ? '今天' : days + ' 天'),
+            tone: days <= 3 ? 'danger' : 'warning'
+          });
+        }
+
+        if (card.type === 'subscription' && days <= windowDays) {
+          reminders.push({
+            id: card.id + '-subscription',
+            cardId: card.id,
+            title: card.name,
+            body: `${days === 0 ? '今天' : days + ' 天后'}续费，金额 ${formatCurrency(card.cost, card.currency)}。`,
+            score: days === 0 ? '今天' : days + ' 天',
+            tone: days <= 1 ? 'danger' : 'warning'
+          });
+        }
+      });
+
+      return reminders.sort((a, b) => {
+        const order = { danger: 0, warning: 1, normal: 2 };
+        return order[a.tone] - order[b.tone];
+      });
+    }
+
+    function renderApp() {
+      renderHeader();
+      renderCardsTab();
+      renderRemindersTab();
+      renderSettingsTab();
+      renderSearch();
+      renderTypeRow();
+      renderThemeRow();
+      renderSoundRow();
+      renderChat();
+      updateNav();
+      updateReminderBadge();
+      updatePermissionStatus();
+      syncCardPagerPosition();
+    }
+
+    function renderHeader() {
+      const map = {
+        cards: '像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。',
+        reminders: '提醒只放在这一页，主页不再承担提醒信息。',
+        settings: '设置页合并归档、备份、通知和全局偏好。'
+      };
+      document.getElementById('headerSubtitle').textContent = map[state.activeTab];
+    }
+
+    function renderCardsTab() {
+      const cards = sortCards(getActiveCards());
+      document.getElementById('cardCountMeta').textContent = cards.length + ' 张';
+
+      const stackEl = document.getElementById('walletStack');
+      const listEl = document.getElementById('cardsList');
+
+      if (!cards.length) {
+        stackEl.innerHTML = `
+          <div class="empty-state">
+            <strong>还没有卡片</strong>
+            <p>右上角点一下加号，就能先创建一张自定义卡片。</p>
+            <button class="sheet-btn primary" type="button" onclick="openCardForm()">新增卡片</button>
+          </div>
+        `;
+        stackEl.style.height = 'auto';
+        listEl.innerHTML = stackEl.innerHTML;
+        return;
+      }
+
+      const stackHeight = 220 + (cards.length - 1) * 56;
+      stackEl.style.height = stackHeight + 'px';
+      stackEl.innerHTML = cards.map((card, index) => {
+        const top = index * 56;
+        const z = cards.length - index;
+        return `
+          <article class="wallet-card" style="top:${top}px; z-index:${z}; background:${escapeHtml(card.backgroundColor)};" onclick="openDetail('${card.id}')">
+            ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : ''}
+            <div class="wallet-card-body">
+              <div class="wallet-row">
+                <div>
+                  <span class="wallet-type">${escapeHtml(TYPE_META[card.type].icon)} ${escapeHtml(TYPE_META[card.type].label)}</span>
+                  <div class="wallet-name">${escapeHtml(card.name)}</div>
+                  <div class="wallet-meta">${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
+                </div>
+                <div class="wallet-emoji">${escapeHtml(card.emoji)}</div>
+              </div>
+              <div class="wallet-bottom">
+                ${renderCardMetrics(card)}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      listEl.innerHTML = cards.map((card) => renderListCard(card)).join('');
+    }
+
+    function renderCardMetrics(card) {
+      if (card.type === 'class_pass') {
+        return `
+          <div>
+            <div class="wallet-stat-label">剩余次数</div>
+            <div class="wallet-stat-value">${card.remainingCount}<span style="font-size:14px; font-weight:500; opacity:0.86;"> / ${card.totalCount}</span></div>
+          </div>
+          <div>
+            <div class="wallet-stat-label">到期日期</div>
+            <div class="wallet-stat-value small">${escapeHtml(formatDate(card.expiryDate))}</div>
+          </div>
+        `;
+      }
+
+      if (card.type === 'membership') {
+        return `
+          <div>
+            <div class="wallet-stat-label">状态</div>
+            <div class="wallet-stat-value small">会员有效期内</div>
+          </div>
+          <div>
+            <div class="wallet-stat-label">到期日期</div>
+            <div class="wallet-stat-value small">${escapeHtml(formatDate(card.expiryDate))}</div>
+          </div>
+        `;
+      }
+
+      return `
+        <div>
+          <div class="wallet-stat-label">金额</div>
+          <div class="wallet-stat-value small">${escapeHtml(formatCurrency(card.cost, card.currency))}</div>
+        </div>
+        <div>
+          <div class="wallet-stat-label">续费日期</div>
+          <div class="wallet-stat-value small">${escapeHtml(formatDate(card.renewalDate))}</div>
+        </div>
+      `;
+    }
+
+    function renderListCard(card) {
+      const status = getStatus(card);
+      return `
+        <article class="list-card">
+          <div class="list-head">
+            <div>
+              <div class="list-title">${escapeHtml(card.name)}</div>
+              <div class="list-copy">${escapeHtml(TYPE_META[card.type].label)} · ${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
+            </div>
+            <span class="pill ${status.tone}">${escapeHtml(status.label)}</span>
+          </div>
+          <div class="meta-row">
+            <span class="pill">${escapeHtml(getCardDateLabel(card))} ${escapeHtml(formatDate(getCardDate(card)))}</span>
+            ${card.type === 'class_pass'
+              ? `<span class="pill">${card.remainingCount} / ${card.totalCount}</span>`
+              : ''
+            }
+            ${card.type !== 'class_pass'
+              ? `<span class="pill">${escapeHtml(formatCurrency(card.cost, card.currency))}</span>`
+              : ''
+            }
+          </div>
+          ${card.notes ? `<div class="list-copy" style="margin-top:12px;">${escapeHtml(card.notes)}</div>` : ''}
+          <div class="list-actions">
+            <button class="list-btn primary" type="button" onclick="openDetail('${card.id}')">查看详情</button>
+            <button class="list-btn" type="button" onclick="openCardForm('${card.id}')">编辑</button>
+            ${card.type === 'class_pass' ? `<button class="list-btn" type="button" onclick="useClass('${card.id}')">扣减一次</button>` : ''}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderRemindersTab() {
+      const reminders = buildReminders();
+      const urgent = reminders.filter((item) => item.tone === 'danger').length;
+      document.getElementById('reminderMeta').textContent = reminders.length + ' 条';
+      document.getElementById('urgentCount').textContent = urgent;
+      document.getElementById('windowCount').textContent = state.settings.reminderWindow + ' 天';
+
+      const list = document.getElementById('reminderList');
+      list.innerHTML = reminders.length ? reminders.map((item) => `
+        <button class="reminder-item" type="button" onclick="openDetail('${item.cardId}')">
+          <div>
+            <div class="reminder-title">${escapeHtml(item.title)}</div>
+            <div class="reminder-copy">${escapeHtml(item.body)}</div>
+          </div>
+          <div class="reminder-badge ${item.tone}">${escapeHtml(item.score)}</div>
+        </button>
+      `).join('') : `
+        <div class="empty-state">
+          <strong>暂无提醒</strong>
+          <p>现在没有命中规则的提醒，卡片状态比较平稳。</p>
+        </div>
+      `;
+    }
+
+    function renderSettingsTab() {
+      document.getElementById('syncMeta').textContent = state.settings.lastExportAt ? 'Backed up' : 'Local';
+      document.getElementById('archiveMeta').textContent = getArchivedCards().length + ' 张';
+
+      document.getElementById('settingsList').innerHTML = `
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">卡片点击音效</div>
+            <div class="settings-copy">开启后，点开卡片和预览音效都会播放卡片绑定的 mp3。</div>
+          </div>
+          <button class="toggle ${state.settings.soundEnabled ? 'on' : ''}" type="button" onclick="toggleSetting('soundEnabled')"></button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">提醒模块</div>
+            <div class="settings-copy">关闭后依然保留页面数据，但不再主动弹出提醒预览。</div>
+          </div>
+          <button class="toggle ${state.settings.remindersEnabled ? 'on' : ''}" type="button" onclick="toggleSetting('remindersEnabled')"></button>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">提醒窗口</div>
+            <div class="settings-copy">当前按 ${state.settings.reminderWindow} 天筛选提醒。</div>
+          </div>
+          <button class="list-btn" type="button" onclick="cycleReminderWindow()">${state.settings.reminderWindow} 天</button>
+        </div>
+      `;
+
+      const archived = sortCards(getArchivedCards());
+      document.getElementById('archiveList').innerHTML = archived.length ? archived.map((card) => `
+        <article class="archive-card">
+          <div class="list-head">
+            <div>
+              <div class="list-title">${escapeHtml(card.name)}</div>
+              <div class="list-copy">${escapeHtml(TYPE_META[card.type].label)} · ${escapeHtml(card.category || '未分类')}</div>
+            </div>
+            <span class="pill">已归档</span>
+          </div>
+          <div class="meta-row">
+            <span class="pill">${escapeHtml(getCardDateLabel(card))} ${escapeHtml(formatDate(getCardDate(card)))}</span>
+          </div>
+          <div class="list-actions">
+            <button class="list-btn primary" type="button" onclick="restoreCard('${card.id}')">恢复</button>
+            <button class="list-btn danger" type="button" onclick="deleteForever('${card.id}')">彻底删除</button>
+          </div>
+        </article>
+      `).join('') : `
+        <div class="empty-state">
+          <strong>归档区为空</strong>
+          <p>被归档的卡片会统一收进这里。</p>
+        </div>
+      `;
+    }
+
+    function renderSearch() {
+      const query = normalizeText(state.searchQuery);
+      const results = !query
+        ? sortCards(getActiveCards()).slice(0, 6)
+        : sortCards(state.cards.filter((card) => {
+            const text = normalizeText([
+              card.name,
+              card.category,
+              card.notes,
+              TYPE_META[card.type].label,
+              card.type
+            ].join(' '));
+            return text.includes(query);
+          }));
+
+      document.getElementById('searchResults').innerHTML = results.length ? results.map((card) => `
+        <button class="search-result" type="button" onclick="openSearchCard('${card.id}')">
+          <div class="list-title">${escapeHtml(card.name)}</div>
+          <div class="list-copy">${escapeHtml(TYPE_META[card.type].label)} · ${escapeHtml(card.category || '未分类')} · ${escapeHtml(getCardDateLabel(card))} ${escapeHtml(formatDate(getCardDate(card)))}</div>
+        </button>
+      `).join('') : `
+        <div class="empty-state">
+          <strong>没有找到结果</strong>
+          <p>可以试试名称、分类、备注或卡片类型。</p>
+        </div>
+      `;
+    }
+
+    function renderTypeRow() {
+      document.getElementById('typeRow').innerHTML = Object.entries(TYPE_META).map(([type, meta]) => `
+        <button class="type-chip ${state.selectedType === type ? 'active' : ''}" type="button" onclick="selectType('${type}')">
+          <div style="font-size:24px;">${meta.icon}</div>
+          <strong>${meta.label}</strong>
+          <span>${meta.helper}</span>
+        </button>
+      `).join('');
+      syncFormFields();
+    }
+
+    function renderThemeRow() {
+      document.getElementById('themeRow').innerHTML = THEME_PRESETS.map((theme) => `
+        <button class="theme-chip ${state.selectedThemeId === theme.id ? 'active' : ''}" type="button" onclick="selectTheme('${theme.id}')">
+          <div class="theme-preview" style="background:${escapeHtml(theme.background)};"></div>
+          <span>${escapeHtml(theme.name)}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderSoundRow() {
+      document.getElementById('soundRow').innerHTML = SOUND_PRESETS.map((sound) => `
+        <button class="sound-chip ${state.selectedSoundId === sound.id ? 'active' : ''}" type="button" onclick="selectSound('${sound.id}')">
+          <strong>${escapeHtml(sound.name)}</strong>
+          <span>${sound.id}</span>
+        </button>
+      `).join('');
+    }
+
+    function renderChat() {
+      document.getElementById('chatMessages').innerHTML = state.chatMessages.map((message) => `
+        <div class="chat-bubble ${message.role}">
+          ${message.content}
+        </div>
+      `).join('');
+      const box = document.getElementById('chatMessages');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function updateNav() {
+      document.querySelectorAll('.tab-page').forEach((page) => page.classList.remove('active'));
+      document.getElementById(state.activeTab + 'Tab').classList.add('active');
+
+      document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.remove('active'));
+      if (state.activeTab === 'cards') document.getElementById('navCards').classList.add('active');
+      if (state.activeTab === 'reminders') document.getElementById('navReminders').classList.add('active');
+      if (state.activeTab === 'settings') document.getElementById('navSettings').classList.add('active');
+
+      document.getElementById('viewTabStack').classList.toggle('active', state.cardView === 'stack');
+      document.getElementById('viewTabList').classList.toggle('active', state.cardView === 'list');
+    }
+
+    function updateReminderBadge() {
+      const count = buildReminders().length;
+      const badge = document.getElementById('reminderBadge');
+      badge.textContent = count;
+      badge.style.display = count ? 'inline-flex' : 'none';
+    }
+
+    function updatePermissionStatus() {
+      const text = typeof Notification === 'undefined'
+        ? '当前浏览器不支持通知。'
+        : '当前权限：' + Notification.permission;
+      document.getElementById('permissionStatus').textContent = text;
+    }
+
+    function soundName(soundId) {
+      return getSound(soundId).name;
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      renderApp();
+      playUiFeedback();
+    }
+
+    function goToCardView(view) {
+      state.cardView = view;
+      const pager = document.getElementById('cardsPager');
+      const left = view === 'stack' ? 0 : pager.clientWidth;
+      pager.scrollTo({ left, behavior: 'smooth' });
+      updateNav();
+      playUiFeedback();
+    }
+
+    function syncCardViewFromScroll() {
+      const pager = document.getElementById('cardsPager');
+      const view = pager.scrollLeft > pager.clientWidth / 2 ? 'list' : 'stack';
+      if (state.cardView !== view) {
+        state.cardView = view;
+        updateNav();
+      }
+    }
+
+    function syncCardPagerPosition() {
+      const pager = document.getElementById('cardsPager');
+      if (!pager) return;
+      const left = state.cardView === 'stack' ? 0 : pager.clientWidth;
+      requestAnimationFrame(() => {
+        pager.scrollLeft = left;
+      });
+    }
+
+    function openSearch() {
+      document.getElementById('searchOverlay').classList.add('active');
+      document.getElementById('searchInput').value = state.searchQuery;
+      renderSearch();
+      setTimeout(() => document.getElementById('searchInput').focus(), 100);
+      playUiFeedback();
+    }
+
+    function closeSearch(event) {
+      if (event && event.target !== event.currentTarget) return;
+      forceCloseSearch();
+    }
+
+    function forceCloseSearch() {
+      document.getElementById('searchOverlay').classList.remove('active');
+    }
+
+    function openSearchCard(cardId) {
+      forceCloseSearch();
+      openDetail(cardId);
+    }
+
+    function openDetail(cardId) {
+      state.detailCardId = cardId;
+      const card = state.cards.find((item) => item.id === cardId);
+      if (!card) return;
+      playCardSound(card.soundId);
+
+      const status = getStatus(card);
+      document.getElementById('detailContent').innerHTML = `
+        <div class="detail-card" style="background:${escapeHtml(card.backgroundColor)};">
+          ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : ''}
+          <div class="detail-card-body">
+            <div class="wallet-row">
+              <div>
+                <span class="wallet-type">${escapeHtml(TYPE_META[card.type].icon)} ${escapeHtml(TYPE_META[card.type].label)}</span>
+                <div class="wallet-name">${escapeHtml(card.name)}</div>
+                <div class="wallet-meta">${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
+              </div>
+              <div class="wallet-emoji">${escapeHtml(card.emoji)}</div>
+            </div>
+            <div class="wallet-bottom">
+              ${renderCardMetrics(card)}
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-box">
+            <strong>${escapeHtml(getCardDateLabel(card))}</strong>
+            <span>${escapeHtml(formatDate(getCardDate(card)))}</span>
+          </div>
+          <div class="detail-box">
+            <strong>卡片音效</strong>
+            <span>${escapeHtml(soundName(card.soundId))}</span>
+          </div>
+          <div class="detail-box">
+            <strong>状态</strong>
+            <span>${escapeHtml(status.label)}</span>
+          </div>
+          <div class="detail-box">
+            <strong>备注</strong>
+            <span>${escapeHtml(card.notes || '暂无备注')}</span>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <button class="card-action primary" type="button" onclick="previewCurrentCardSound()">播放音效</button>
+          <button class="card-action secondary" type="button" onclick="openCardForm('${card.id}')">编辑卡片</button>
+          ${card.type === 'class_pass' ? `<button class="card-action secondary" type="button" onclick="useClass('${card.id}')">扣减一次</button>` : ''}
+          <button class="card-action danger" type="button" onclick="archiveCard('${card.id}')">归档</button>
+        </div>
+      `;
+      document.getElementById('detailOverlay').classList.add('active');
+    }
+
+    function closeDetail(event) {
+      if (event && event.target !== event.currentTarget) return;
+      forceCloseDetail();
+    }
+
+    function forceCloseDetail() {
+      document.getElementById('detailOverlay').classList.remove('active');
+      state.detailCardId = null;
+    }
+
+    function previewCurrentCardSound() {
+      const card = state.cards.find((item) => item.id === state.detailCardId);
+      if (!card) return;
+      playCardSound(card.soundId);
+    }
+
+    function openCardForm(cardId) {
+      forceCloseDetail();
+      const form = document.getElementById('cardForm');
+      form.reset();
+      document.getElementById('imageInput').value = '';
+      state.uploadedImage = null;
+
+      if (cardId) {
+        const card = state.cards.find((item) => item.id === cardId);
+        if (!card) return;
+        state.editingCardId = cardId;
+        state.selectedType = card.type;
+        state.selectedThemeId = card.themeId;
+        state.selectedSoundId = card.soundId;
+        state.uploadedImage = card.cardImage;
+        document.getElementById('formTitle').textContent = '编辑卡片';
+        document.getElementById('submitBtn').textContent = '保存修改';
+        document.getElementById('cardName').value = card.name;
+        document.getElementById('cardCategory').value = card.category || '';
+        document.getElementById('dueDateInput').value = getCardDate(card) || '';
+        document.getElementById('totalCount').value = card.totalCount || '';
+        document.getElementById('remainingCount').value = card.remainingCount || '';
+        document.getElementById('costInput').value = card.cost || '';
+        document.getElementById('currencyInput').value = card.currency || 'CNY';
+        document.getElementById('autoRenewInput').value = String(card.autoRenew);
+        document.getElementById('cardNotes').value = card.notes || '';
+      } else {
+        state.editingCardId = null;
+        state.selectedType = 'class_pass';
+        state.selectedThemeId = 'mint';
+        state.selectedSoundId = 'bgm1';
+        document.getElementById('formTitle').textContent = '新增卡片';
+        document.getElementById('submitBtn').textContent = '保存卡片';
+        document.getElementById('currencyInput').value = 'CNY';
+        document.getElementById('autoRenewInput').value = 'true';
+      }
+
+      renderTypeRow();
+      renderThemeRow();
+      renderSoundRow();
+      syncFormFields();
+      syncUploadBox();
+      document.getElementById('formOverlay').classList.add('active');
+      playUiFeedback();
+    }
+
+    function closeForm(event) {
+      if (event && event.target !== event.currentTarget) return;
+      forceCloseForm();
+    }
+
+    function forceCloseForm() {
+      document.getElementById('formOverlay').classList.remove('active');
+      state.editingCardId = null;
+      state.uploadedImage = null;
+      document.getElementById('cardForm').reset();
+      document.getElementById('imageInput').value = '';
+      syncUploadBox();
+    }
+
+    function selectType(type) {
+      state.selectedType = type;
+      renderTypeRow();
+      playUiFeedback();
+    }
+
+    function selectTheme(themeId) {
+      state.selectedThemeId = themeId;
+      renderThemeRow();
+      playUiFeedback();
+    }
+
+    function selectSound(soundId) {
+      state.selectedSoundId = soundId;
+      renderSoundRow();
+      playCardSound(soundId);
+    }
+
+    function syncFormFields() {
+      const isClass = state.selectedType === 'class_pass';
+      const hasCost = state.selectedType === 'membership' || state.selectedType === 'subscription';
+      const isSub = state.selectedType === 'subscription';
+
+      document.getElementById('classFields').classList.toggle('hidden', !isClass);
+      document.getElementById('costFields').classList.toggle('hidden', !hasCost);
+      document.getElementById('autoRenewWrap').classList.toggle('hidden', !isSub);
+      document.getElementById('dateLabel').textContent = isSub ? '续费日期' : '到期日期';
+      document.getElementById('costLabel').textContent = state.selectedType === 'membership' ? '金额 / 年费' : '金额';
+    }
+
+    function syncUploadBox() {
+      const box = document.getElementById('imageUploadBox');
+      box.classList.toggle('has-image', Boolean(state.uploadedImage));
+      box.style.backgroundImage = state.uploadedImage ? `url(${state.uploadedImage})` : '';
+      box.innerHTML = state.uploadedImage ? `
+        <div class="upload-copy">
+          <strong>已设置卡面图片</strong>
+          <span>点一下可以重新上传或替换图片。</span>
+        </div>
+      ` : `
+        <div class="upload-copy">
+          <strong>上传自定义卡面</strong>
+          <span>点一下上传图片，没有图片时会自动使用主题色卡面。</span>
+        </div>
+      `;
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.uploadedImage = reader.result;
+        syncUploadBox();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function chooseEmoji(type, category) {
+      const text = normalizeText(category);
+      if (type === 'class_pass') {
+        if (text.includes('舞')) return '💃';
+        if (text.includes('瑜')) return '🧘';
+        return '🎫';
+      }
+      if (type === 'membership') {
+        if (text.includes('游')) return '🏊';
+        if (text.includes('健')) return '🏋️';
+        return '💳';
+      }
+      if (text.includes('ai')) return '🤖';
+      if (text.includes('影音')) return '🎬';
+      return '🔄';
+    }
+
+    function saveCard(event) {
+      event.preventDefault();
+      const isEditing = Boolean(state.editingCardId);
+      const name = document.getElementById('cardName').value.trim();
+      const dateValue = document.getElementById('dueDateInput').value;
+      if (!name) {
+        showToast('请先填写卡片名称');
+        return;
+      }
+      if (!dateValue) {
+        showToast('请先填写日期');
+        return;
+      }
+
+      const theme = getTheme(state.selectedThemeId);
+      const now = new Date().toISOString();
+      const existing = state.cards.find((item) => item.id === state.editingCardId);
+
+      const card = normalizeCard({
+        id: state.editingCardId || String(Date.now()),
+        type: state.selectedType,
+        name,
+        category: document.getElementById('cardCategory').value.trim(),
+        remainingCount: Number(document.getElementById('remainingCount').value || 0),
+        totalCount: Number(document.getElementById('totalCount').value || 0),
+        expiryDate: state.selectedType === 'subscription' ? '' : dateValue,
+        renewalDate: state.selectedType === 'subscription' ? dateValue : '',
+        notes: document.getElementById('cardNotes').value.trim(),
+        themeId: theme.id,
+        backgroundColor: theme.background,
+        accentColor: theme.accent,
+        cardImage: state.uploadedImage,
+        soundId: state.selectedSoundId,
+        emoji: chooseEmoji(state.selectedType, document.getElementById('cardCategory').value),
+        autoRenew: document.getElementById('autoRenewInput').value === 'true',
+        cost: Number(document.getElementById('costInput').value || 0),
+        currency: document.getElementById('currencyInput').value,
+        createdAt: existing ? existing.createdAt : now,
+        updatedAt: now,
+        isArchived: existing ? existing.isArchived : false
+      });
+
+      if (card.type === 'class_pass') {
+        if (!card.totalCount) card.totalCount = 10;
+        if (!document.getElementById('remainingCount').value) {
+          card.remainingCount = card.totalCount;
+        }
+      } else {
+        card.totalCount = 0;
+        card.remainingCount = 0;
+      }
+
+      const index = state.cards.findIndex((item) => item.id === card.id);
+      if (index >= 0) {
+        state.cards.splice(index, 1, card);
+      } else {
+        state.cards.unshift(card);
+      }
+
+      persistCards();
+      renderApp();
+      forceCloseForm();
+      showToast(isEditing ? '卡片已更新' : '卡片已添加');
+      playCardSound(card.soundId);
+    }
+
+    function useClass(cardId) {
+      const card = state.cards.find((item) => item.id === cardId);
+      if (!card || card.type !== 'class_pass') return;
+      if (card.remainingCount <= 0) {
+        showToast('这张课程卡已经没有剩余次数了');
+        return;
+      }
+      card.remainingCount -= 1;
+      card.updatedAt = new Date().toISOString();
+      persistCards();
+      renderApp();
+      showToast(card.name + ' 已扣减 1 次');
+      playCardSound(card.soundId);
+      if (state.detailCardId === cardId) openDetail(cardId);
+    }
+
+    function archiveCard(cardId) {
+      const card = state.cards.find((item) => item.id === cardId);
+      if (!card) return;
+      if (!window.confirm('确认把“' + card.name + '”移入归档吗？')) return;
+      card.isArchived = true;
+      card.updatedAt = new Date().toISOString();
+      persistCards();
+      renderApp();
+      forceCloseDetail();
+      showToast('已归档：' + card.name);
+    }
+
+    function restoreCard(cardId) {
+      const card = state.cards.find((item) => item.id === cardId);
+      if (!card) return;
+      card.isArchived = false;
+      card.updatedAt = new Date().toISOString();
+      persistCards();
+      renderApp();
+      showToast('已恢复：' + card.name);
+      playCardSound(card.soundId);
+    }
+
+    function deleteForever(cardId) {
+      const card = state.cards.find((item) => item.id === cardId);
+      if (!card) return;
+      if (!window.confirm('这会彻底删除“' + card.name + '”，确认继续吗？')) return;
+      state.cards = state.cards.filter((item) => item.id !== cardId);
+      persistCards();
+      renderApp();
+      showToast('已彻底删除');
+    }
+
+    function toggleSetting(key) {
+      state.settings[key] = !state.settings[key];
+      persistSettings();
+      renderApp();
+      showToast(state.settings[key] ? '已开启' : '已关闭');
+      playUiFeedback();
+    }
+
+    function cycleReminderWindow() {
+      const values = [7, 14, 30];
+      const current = values.indexOf(state.settings.reminderWindow);
+      state.settings.reminderWindow = values[(current + 1) % values.length];
+      persistSettings();
+      renderApp();
+      showToast('提醒窗口已切换为 ' + state.settings.reminderWindow + ' 天');
+    }
+
+    function exportBackup() {
+      const data = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        cards: state.cards,
+        settings: state.settings
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'cardvault-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      state.settings.lastExportAt = new Date().toISOString();
+      persistSettings();
+      renderApp();
+      showToast('备份已导出');
+    }
+
+    function importBackup(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (!Array.isArray(data.cards)) throw new Error('invalid');
+          if (!window.confirm('导入会覆盖当前本地数据，确认继续吗？')) return;
+          state.cards = data.cards.map(normalizeCard);
+          state.settings = { ...getDefaultSettings(), ...(data.settings || {}) };
+          persistCards();
+          persistSettings();
+          renderApp();
+          showToast('备份已恢复');
+        } catch (error) {
+          showToast('导入失败，请检查 JSON 文件');
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetDemoData() {
+      if (!window.confirm('确认恢复默认 Demo 数据吗？')) return;
+      state.cards = SAMPLE_CARDS.map(normalizeCard);
+      state.settings = getDefaultSettings();
+      persistCards();
+      persistSettings();
+      renderApp();
+      showToast('已恢复默认 Demo 数据');
+    }
+
+    function requestNotificationPermission() {
+      if (typeof Notification === 'undefined') {
+        showToast('当前浏览器不支持通知');
+        return;
+      }
+      Notification.requestPermission().then(() => {
+        renderApp();
+        showToast('当前权限：' + Notification.permission);
+      });
+    }
+
+    function playCardSound(soundId) {
+      if (!state.settings.soundEnabled) return;
+      const sound = getSound(soundId);
+      try {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+        currentAudio = new Audio(sound.src);
+        currentAudio.volume = 0.9;
+        currentAudio.play().catch(() => {});
+      } catch (error) {
+        playUiFeedback();
+      }
+    }
+
+    function playUiFeedback() {
+      if (navigator.vibrate && state.settings.soundEnabled) {
+        navigator.vibrate(8);
+      }
+    }
+
+    function openChat() {
+      state.chatOpen = true;
+      document.getElementById('chatPanel').classList.add('active');
+      setTimeout(() => document.getElementById('chatInput').focus(), 100);
+      playUiFeedback();
+    }
+
+    function closeChat() {
+      state.chatOpen = false;
+      document.getElementById('chatPanel').classList.remove('active');
+    }
+
+    function askSuggestion(text) {
+      document.getElementById('chatInput').value = text;
+      sendChatMessage();
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      state.chatMessages.push({ role: 'user', content: escapeHtml(text) });
+      input.value = '';
+      renderChat();
+
+      setTimeout(() => {
+        state.chatMessages.push({ role: 'assistant', content: generateAssistantReply(text) });
+        renderChat();
+      }, 240);
+    }
+
+    function generateAssistantReply(text) {
+      const query = normalizeText(text);
+      const active = sortCards(getActiveCards());
+      const reminders = buildReminders();
+
+      if (!active.length) {
+        return '现在还没有活跃卡片，可以先点右上角加号创建一张。';
+      }
+
+      if (query.includes('到期') || query.includes('续费') || query.includes('快')) {
+        return reminders.length
+          ? `当前有 <strong>${reminders.length}</strong> 条提醒。<br><br>${reminders.slice(0, 4).map((item) => `• <strong>${escapeHtml(item.title)}</strong>：${escapeHtml(item.body)}`).join('<br>')}`
+          : '现在没有命中提醒规则的卡片。';
+      }
+
+      if (query.includes('课程') || query.includes('次数') || query.includes('剩')) {
+        const classCards = active.filter((card) => card.type === 'class_pass');
+        const total = classCards.reduce((sum, card) => sum + card.remainingCount, 0);
+        return classCards.length
+          ? `你现在有 <strong>${classCards.length}</strong> 张课程卡，剩余合计 <strong>${total}</strong> 次。<br><br>${classCards.map((card) => `• ${escapeHtml(card.name)}：${card.remainingCount} / ${card.totalCount}`).join('<br>')}`
+          : '当前没有课程卡。';
+      }
+
+      if (query.includes('订阅') || query.includes('多少钱') || query.includes('费用')) {
+        const subs = active.filter((card) => card.type === 'subscription');
+        const total = subs.reduce((sum, card) => sum + Number(card.currency === 'USD' ? card.cost : 0), 0);
+        const cny = subs.filter((card) => card.currency !== 'USD').reduce((sum, card) => sum + Number(card.cost), 0);
+        if (!subs.length) return '当前没有订阅卡片。';
+        const parts = [];
+        if (total) parts.push('$' + total);
+        if (cny) parts.push('CNY ' + cny);
+        return `当前订阅共 <strong>${subs.length}</strong> 项，每月大约 <strong>${parts.join(' / ')}</strong>。`;
+      }
+
+      const matched = active.find((card) => normalizeText(card.name).includes(query));
+      if (matched) {
+        return `<strong>${escapeHtml(matched.name)}</strong><br>${escapeHtml(getCardDateLabel(matched))}：${escapeHtml(formatDate(getCardDate(matched)))}<br>音效：${escapeHtml(soundName(matched.soundId))}<br>备注：${escapeHtml(matched.notes || '暂无备注')}`;
+      }
+
+      return `当前有 <strong>${active.length}</strong> 张活跃卡片。你可以继续问我到期、课程余量、订阅金额或指定某张卡片。`;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function registerServiceWorker() {
+      if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderApp();
+      registerServiceWorker();
+
+      document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+      document.getElementById('backupInput').addEventListener('change', importBackup);
+      document.getElementById('cardForm').addEventListener('submit', saveCard);
+      document.getElementById('searchInput').addEventListener('input', (event) => {
+        state.searchQuery = event.target.value;
+        renderSearch();
+      });
+      document.getElementById('chatInput').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          sendChatMessage();
+        }
+      });
+      document.getElementById('cardsPager').addEventListener('scroll', syncCardViewFromScroll, { passive: true });
+    });
+  </script>
+</body>
+</html>

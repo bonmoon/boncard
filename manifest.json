@@ -1,0 +1,17 @@
+{
+  "name": "手机卡片管家",
+  "short_name": "CardVault",
+  "description": "用更直观的方式管理课程卡、会员卡和订阅续费。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5faf8",
+  "theme_color": "#1fb989",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
