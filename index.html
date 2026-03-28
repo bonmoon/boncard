@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#2dd4a8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="CardVault">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>手机卡片管家</title>
   <link rel="manifest" href="manifest.json">
   <style>
@@ -19,13 +21,13 @@
     :root {
       --mint: #2dd4a8;
       --mint-deep: #179d78;
-      --bg: #ffffff;
-      --bg-soft: #ffffff;
-      --card: #ffffff;
-      --card-strong: #ffffff;
-      --text: #1f2329;
-      --text-soft: #94979c;
-      --line: rgba(31, 35, 41, 0.08);
+      --bg: #f6faf8;
+      --bg-soft: #eef5f2;
+      --card: rgba(255, 255, 255, 0.88);
+      --card-strong: rgba(255, 255, 255, 0.96);
+      --text: #16352d;
+      --text-soft: #688078;
+      --line: rgba(22, 53, 45, 0.08);
       --danger: #e45a5a;
       --warning: #f3a61f;
       --success: #1fa971;
@@ -42,7 +44,10 @@
     body {
       font-family: "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: var(--text);
-      background: #f9fbfa;
+      background:
+        radial-gradient(circle at top right, rgba(45, 212, 168, 0.12), transparent 24%),
+        radial-gradient(circle at top left, rgba(255, 216, 194, 0.42), transparent 28%),
+        linear-gradient(180deg, #fbfdfc 0%, var(--bg) 42%, var(--bg-soft) 100%);
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -66,26 +71,28 @@
       min-height: 100vh;
       padding: calc(var(--safe-top) + 8px) 16px calc(86px + var(--safe-bottom));
       position: relative;
-      background: #f9fbfa;
     }
 
     .header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
 
     .header-title {
-      font-size: 34px;
+      font-size: 30px;
       line-height: 1.05;
       font-weight: 700;
       letter-spacing: -0.04em;
     }
 
     .header-subtitle {
-      display: none;
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.5;
     }
 
     .header-actions {
@@ -95,21 +102,22 @@
     }
 
     .icon-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #f7f7f7;
-      border: 1px solid rgba(31, 35, 41, 0.03);
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.9);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      box-shadow: var(--shadow);
       transition: transform 0.18s ease, background 0.18s ease;
+      backdrop-filter: blur(14px);
     }
 
     .icon-btn.primary {
-      background: #33d0a6;
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
       color: white;
     }
 
@@ -142,19 +150,10 @@
     .panel {
       background: var(--card);
       border-radius: var(--radius-xl);
-      border: 1px solid rgba(31, 35, 41, 0.04);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
       overflow: hidden;
-    }
-
-    .cards-panel {
-      background: transparent;
-      border: none;
-      box-shadow: none;
-    }
-
-    .cards-panel .panel-head {
-      display: none;
     }
 
     .panel-head {
@@ -185,13 +184,13 @@
     }
 
     .segmented {
-      margin: 0 16px 12px;
+      margin: 14px 16px 10px;
       padding: 4px;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 4px;
       border-radius: 16px;
-      background: #f4f4f4;
+      background: rgba(22, 53, 45, 0.06);
     }
 
     .segmented-btn {
@@ -205,9 +204,9 @@
     }
 
     .segmented-btn.active {
-      background: #ffffff;
+      background: var(--card-strong);
       color: var(--text);
-      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+      box-shadow: 0 8px 20px rgba(23, 61, 51, 0.08);
     }
 
     .cards-pager {
@@ -225,7 +224,7 @@
     .cards-view {
       min-width: 100%;
       scroll-snap-align: start;
-      padding: 0 16px 18px;
+      padding: 0 16px 16px;
     }
 
     .stack-view {
@@ -240,14 +239,13 @@
       position: absolute;
       left: 0;
       right: 0;
-      height: 228px;
+      height: 220px;
       border-radius: 24px;
       overflow: hidden;
       cursor: pointer;
-      color: var(--text);
-      background: #ffffff;
-      box-shadow: 0 24px 54px rgba(15, 23, 42, 0.08);
-      border: 1px solid rgba(31, 35, 41, 0.03);
+      color: white;
+      box-shadow: var(--card-shadow);
+      border: 1px solid rgba(255, 255, 255, 0.26);
       transition: transform 0.18s ease;
     }
 
@@ -263,35 +261,22 @@
       object-fit: cover;
     }
 
+    .wallet-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.14) 100%);
+      pointer-events: none;
+    }
+
     .wallet-card-body {
       position: relative;
       z-index: 1;
       height: 100%;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .wallet-top {
-      min-height: 142px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      position: relative;
-    }
-
-    .wallet-top.has-image::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.14);
-    }
-
-    .wallet-bottom-panel {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.96);
-      padding: 16px 18px 18px;
     }
 
     .wallet-row {
@@ -307,37 +292,31 @@
       gap: 6px;
       padding: 7px 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.16);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.03em;
-      color: rgba(31, 35, 41, 0.6);
-      text-transform: uppercase;
+      backdrop-filter: blur(8px);
     }
 
     .wallet-name {
-      margin-top: 8px;
-      font-size: 22px;
+      margin-top: 10px;
+      font-size: 23px;
       line-height: 1.12;
       font-weight: 700;
       letter-spacing: -0.03em;
-      max-width: 240px;
+      max-width: 220px;
     }
 
     .wallet-meta {
-      margin-top: 5px;
-      font-size: 12px;
-      color: rgba(31, 35, 41, 0.42);
+      margin-top: 7px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.84);
     }
 
-    .wallet-emoji,
-    .wallet-image-icon {
-      font-size: 58px;
+    .wallet-emoji {
+      font-size: 38px;
       line-height: 1;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -38%);
     }
 
     .wallet-bottom {
@@ -349,19 +328,20 @@
 
     .wallet-stat-label {
       font-size: 11px;
-      color: #a1a1a1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.74);
       margin-bottom: 4px;
     }
 
     .wallet-stat-value {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
       line-height: 1.35;
-      color: var(--text);
     }
 
     .wallet-stat-value.small {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
     }
 
@@ -481,14 +461,14 @@
     .list-btn,
     .sheet-btn.secondary,
     .card-action.secondary {
-      background: #f4f5f4;
+      background: rgba(22, 53, 45, 0.06);
       color: var(--text);
     }
 
     .sheet-btn.primary,
     .card-action.primary,
     .list-btn.primary {
-      background: #33d0a6;
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
       color: white;
     }
 
@@ -506,9 +486,9 @@
 
     .summary-box {
       padding: 14px;
-      background: #fafafa;
+      background: rgba(255, 255, 255, 0.8);
       border-radius: 18px;
-      border: 1px solid rgba(31, 35, 41, 0.05);
+      border: 1px solid rgba(22, 53, 45, 0.06);
     }
 
     .summary-box strong {
@@ -620,7 +600,7 @@
     }
 
     .toggle.on {
-      background: #33d0a6;
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
     }
 
     .toggle.on::after {
@@ -637,12 +617,12 @@
     .action-box {
       padding: 16px 14px;
       border-radius: 20px;
-      background: #fafafa;
+      background: rgba(255, 255, 255, 0.88);
       border: 1px solid rgba(22, 53, 45, 0.06);
       cursor: pointer;
       text-align: left;
       min-height: 112px;
-      box-shadow: none;
+      box-shadow: 0 10px 24px rgba(23, 61, 51, 0.05);
     }
 
     .action-box strong {
@@ -665,16 +645,15 @@
       width: 100%;
       max-width: 430px;
       padding: 10px 16px calc(12px + var(--safe-bottom));
-      background: rgba(252, 252, 251, 0.98);
-      border-top: 1px solid rgba(31, 35, 41, 0.05);
-      border-radius: 28px 28px 0 0;
-      box-shadow: 0 -8px 26px rgba(15, 23, 42, 0.03);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(18px);
+      border-top: 1px solid rgba(22, 53, 45, 0.06);
       z-index: 60;
     }
 
     .nav-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
 
@@ -692,8 +671,17 @@
     }
 
     .nav-btn.active {
-      color: var(--text);
-      background: rgba(51, 208, 166, 0.1);
+      color: var(--mint-deep);
+    }
+
+    .nav-btn.active .nav-icon {
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      color: white;
+      box-shadow: 0 6px 16px rgba(23, 157, 120, 0.32);
+    }
+
+    .nav-btn.active .nav-label {
+      color: var(--mint-deep);
     }
 
     .nav-icon {
@@ -704,17 +692,24 @@
       align-items: center;
       justify-content: center;
       background: rgba(22, 53, 45, 0.05);
+      transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
     }
 
     .nav-label {
       font-size: 11px;
       font-weight: 700;
+      transition: color 0.2s ease;
+    }
+
+    @keyframes pulse-badge {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.18); }
     }
 
     .nav-badge {
       position: absolute;
-      top: 4px;
-      right: 20px;
+      top: 8px;
+      right: 26px;
       min-width: 18px;
       height: 18px;
       padding: 0 5px;
@@ -726,6 +721,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      animation: pulse-badge 2.4s ease-in-out infinite;
     }
 
     .overlay,
@@ -751,7 +747,7 @@
       max-width: 430px;
       max-height: min(88vh, 780px);
       overflow-y: auto;
-      background: #ffffff;
+      background: #fffefc;
       border-radius: 28px 28px 0 0;
       padding: 16px 16px calc(18px + var(--safe-bottom));
       transform: translateY(100%);
@@ -808,40 +804,27 @@
       height: 228px;
       border-radius: 24px;
       overflow: hidden;
-      color: var(--text);
+      color: white;
       position: relative;
-      box-shadow: 0 24px 54px rgba(15, 23, 42, 0.08);
+      box-shadow: var(--card-shadow);
       margin-bottom: 14px;
-      background: #ffffff;
+    }
+
+    .detail-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.16) 100%);
     }
 
     .detail-card-body {
       position: relative;
       z-index: 1;
       height: 100%;
-      padding: 0;
-    }
-
-    .detail-top {
-      min-height: 142px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      position: relative;
-    }
-
-    .detail-top.has-image::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(255, 255, 255, 0.14);
-    }
-
-    .detail-bottom {
-      height: calc(100% - 142px);
-      background: rgba(255, 255, 255, 0.97);
-      padding: 16px 18px 18px;
     }
 
     .detail-grid {
@@ -1016,15 +999,6 @@
       text-align: center;
       padding: 16px;
       cursor: pointer;
-      background-size: cover;
-      background-position: center;
-    }
-
-    .upload-box.has-image .upload-copy {
-      background: rgba(255, 255, 255, 0.84);
-      padding: 10px 12px;
-      border-radius: 14px;
-      backdrop-filter: blur(10px);
     }
 
     .upload-copy strong {
@@ -1038,6 +1012,68 @@
       color: var(--text-soft);
       line-height: 1.45;
     }
+
+    /* ── Image pan/zoom editor ── */
+    .img-editor-wrap {
+      border-radius: 22px;
+      overflow: hidden;
+      position: relative;
+      background: #111;
+      height: 190px;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+      border: 2px solid rgba(22, 53, 45, 0.1);
+    }
+
+    .img-editor-wrap:active { cursor: grabbing; }
+
+    .img-editor-wrap img {
+      position: absolute;
+      transform-origin: 0 0;
+      pointer-events: none;
+      will-change: transform;
+      max-width: none;
+    }
+
+    .img-editor-toolbar {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .img-editor-hint {
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.4;
+    }
+
+    .img-editor-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .img-editor-btn {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      background: rgba(22, 53, 45, 0.07);
+      color: var(--text);
+      border: none;
+      transition: background 0.15s;
+    }
+
+    .img-editor-btn.primary {
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      color: white;
+    }
+
+    .img-editor-btn:active { transform: scale(0.96); }
 
     .search-input {
       margin-bottom: 12px;
@@ -1055,7 +1091,9 @@
     .chat-panel {
       position: fixed;
       inset: 0;
-      background: #f9fbfa;
+      background:
+        radial-gradient(circle at top left, rgba(255, 216, 194, 0.42), transparent 26%),
+        linear-gradient(180deg, #fffefc 0%, #f4faf7 56%, #eef4f1 100%);
       transform: translateX(100%);
       transition: transform 0.26s ease;
       z-index: 120;
@@ -1136,7 +1174,7 @@
 
     .chat-bubble.user {
       margin-left: auto;
-      background: #33d0a6;
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
       color: white;
       border-bottom-right-radius: 8px;
     }
@@ -1153,8 +1191,9 @@
       right: 0;
       bottom: 0;
       padding: 12px 16px calc(12px + var(--safe-bottom));
-      background: #fbfbfb;
+      background: rgba(255, 255, 255, 0.94);
       border-top: 1px solid rgba(22, 53, 45, 0.06);
+      backdrop-filter: blur(16px);
     }
 
     .chat-input-row {
@@ -1174,7 +1213,7 @@
       width: 46px;
       height: 46px;
       border-radius: 50%;
-      background: #33d0a6;
+      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
       color: white;
       display: inline-flex;
       align-items: center;
@@ -1209,6 +1248,142 @@
       display: none !important;
     }
 
+    /* ── Save button states ── */
+    @keyframes btn-success-pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.06); }
+      70%  { transform: scale(0.97); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .sheet-btn.loading {
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .sheet-btn.loading::after {
+      content: "";
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .sheet-btn.success {
+      background: linear-gradient(135deg, #12875e, #26c48b) !important;
+      animation: btn-success-pop 0.35s ease forwards;
+    }
+
+    /* ── Progress bar (class_pass cards) ── */
+    .progress-bar-track {
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(22, 53, 45, 0.08);
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--mint-deep), var(--mint));
+      transition: width 0.4s ease;
+    }
+
+    .progress-bar-fill.warning {
+      background: linear-gradient(90deg, #c87d00, var(--warning));
+    }
+
+    .progress-bar-fill.danger {
+      background: linear-gradient(90deg, #b83030, var(--danger));
+    }
+
+    /* ── Accent left-bar on list / reminder items ── */
+    .list-card,
+    .archive-card,
+    .search-result {
+      border-left: 3.5px solid transparent;
+    }
+
+    .reminder-item {
+      border-left: 3.5px solid transparent;
+    }
+
+    .reminder-item.tone-warning { border-left-color: var(--warning); }
+    .reminder-item.tone-danger  { border-left-color: var(--danger); }
+
+    /* ── Sound chip emoji size ── */
+    .sound-chip-emoji {
+      font-size: 22px;
+      line-height: 1;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    /* ── Summary boxes ── */
+    .summary-box {
+      background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(255,255,255,0.78));
+    }
+
+    .summary-box.urgent strong {
+      color: var(--danger);
+    }
+
+    /* ── Action boxes ── */
+    .action-box {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .action-box:active {
+      transform: scale(0.97);
+    }
+
+    .action-box-icon {
+      font-size: 26px;
+      line-height: 1;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* ── Wallet card subtle inner highlight ── */
+    .wallet-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* ── Detail box improvements ── */
+    .detail-box {
+      border: 1px solid rgba(22, 53, 45, 0.05);
+    }
+
+    .detail-box strong {
+      color: var(--text-soft);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+
+    .detail-box span {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
     @media (max-width: 380px) {
       .form-row,
       .detail-grid,
@@ -1227,14 +1402,21 @@
   <div class="app">
     <header class="header">
       <div>
-        <div class="header-title">My cards</div>
-        <div class="header-subtitle" id="headerSubtitle"></div>
+        <div class="header-title">手机卡片管家</div>
+        <div class="header-subtitle" id="headerSubtitle">像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。</div>
       </div>
       <div class="header-actions">
         <button class="icon-btn" type="button" onclick="openSearch()" aria-label="搜索">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="M20 20 17 17"></path>
+          </svg>
+        </button>
+        <button class="icon-btn" type="button" onclick="openChat()" aria-label="AI 助手">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 10h10"></path>
+            <path d="M7 14h6"></path>
+            <path d="M5 19l1.6-2.4A7 7 0 0 1 5 12a7 7 0 1 1 14 0 7 7 0 0 1-7 7H5Z"></path>
           </svg>
         </button>
         <button class="icon-btn primary" type="button" onclick="openCardForm()" aria-label="新增卡片">
@@ -1248,7 +1430,7 @@
 
     <main class="main">
       <section class="tab-page active" id="cardsTab">
-        <div class="panel cards-panel">
+        <div class="panel">
           <div class="panel-head">
             <div>
               <div class="panel-title">我的卡片</div>
@@ -1283,13 +1465,13 @@
             <div class="panel-side" id="reminderMeta">0 条</div>
           </div>
           <div class="summary-row">
-            <div class="summary-box">
+            <div class="summary-box" id="urgentBox">
               <strong id="urgentCount">0</strong>
               <span>紧急提醒</span>
             </div>
             <div class="summary-box">
               <strong id="windowCount">14 天</strong>
-              <span>默认提醒窗口</span>
+              <span>提醒窗口</span>
             </div>
           </div>
           <div class="reminder-list" id="reminderList"></div>
@@ -1308,18 +1490,22 @@
           <div class="settings-list" id="settingsList"></div>
           <div class="action-grid">
             <button class="action-box" type="button" onclick="exportBackup()">
+              <span class="action-box-icon">📤</span>
               <strong>导出备份</strong>
               <span>把当前卡片与设置导出为 JSON，方便后续迁移或上传云端。</span>
             </button>
             <button class="action-box" type="button" onclick="document.getElementById('backupInput').click()">
+              <span class="action-box-icon">📥</span>
               <strong>导入恢复</strong>
               <span>从导出的 JSON 里恢复本地数据。</span>
             </button>
             <button class="action-box" type="button" onclick="requestNotificationPermission()">
+              <span class="action-box-icon">🔔</span>
               <strong>通知权限</strong>
               <span id="permissionStatus">检查当前浏览器通知权限。</span>
             </button>
             <button class="action-box" type="button" onclick="resetDemoData()">
+              <span class="action-box-icon">🔄</span>
               <strong>重置 Demo</strong>
               <span>恢复默认演示卡片，方便继续调界面和交互。</span>
             </button>
@@ -1349,7 +1535,7 @@
             <path d="M2 9h20"></path>
           </svg>
         </span>
-        <span class="nav-label">Cards</span>
+        <span class="nav-label">卡片</span>
       </button>
       <button class="nav-btn" id="navReminders" type="button" onclick="switchTab('reminders')">
         <span class="nav-icon">
@@ -1359,17 +1545,7 @@
           </svg>
         </span>
         <span class="nav-badge" id="reminderBadge">0</span>
-        <span class="nav-label">Expiring</span>
-      </button>
-      <button class="nav-btn" id="navChat" type="button" onclick="openChat()">
-        <span class="nav-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <path d="M12 19v3"></path>
-          </svg>
-        </span>
-        <span class="nav-label">AI Chat</span>
+        <span class="nav-label">提醒</span>
       </button>
       <button class="nav-btn" id="navSettings" type="button" onclick="switchTab('settings')">
         <span class="nav-icon">
@@ -1381,7 +1557,7 @@
             <circle cx="12" cy="12" r="3.5"></circle>
           </svg>
         </span>
-        <span class="nav-label">Settings</span>
+        <span class="nav-label">设置</span>
       </button>
     </div>
   </nav>
@@ -1510,10 +1686,23 @@
 
         <div class="form-group">
           <label class="form-label">卡面图片</label>
-          <div class="upload-box" id="imageUploadBox" onclick="document.getElementById('imageInput').click()">
+          <div id="imageUploadBox" class="upload-box" onclick="document.getElementById('imageInput').click()">
             <div class="upload-copy">
               <strong>上传自定义卡面</strong>
               <span>点一下上传图片，没有图片时会自动使用主题色卡面。</span>
+            </div>
+          </div>
+          <div id="imgEditorContainer" class="hidden">
+            <div class="img-editor-wrap" id="imgEditorViewport">
+              <img id="imgEditorImg" src="" alt="卡面预览">
+            </div>
+            <div class="img-editor-toolbar">
+              <span class="img-editor-hint">拖动移位 · 双指或滚轮缩放</span>
+              <div class="img-editor-actions">
+                <button class="img-editor-btn" type="button" onclick="resetImgEditor()">重置</button>
+                <button class="img-editor-btn" type="button" onclick="document.getElementById('imageInput').click()">换图</button>
+                <button class="img-editor-btn primary" type="button" onclick="confirmImgCrop()">确认裁剪</button>
+              </div>
             </div>
           </div>
           <input id="imageInput" class="hidden" type="file" accept="image/*">
@@ -1587,43 +1776,45 @@
       {
         id: 'mint',
         name: '薄荷',
-        background: '#dff5ee',
+        background: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
         accent: '#179d78'
       },
       {
         id: 'rose',
         name: '莓粉',
-        background: '#f8e4ea',
+        background: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
         accent: '#cf5f88'
       },
       {
         id: 'amber',
         name: '琥珀',
-        background: '#ffe49a',
+        background: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
         accent: '#bc7f11'
       },
       {
         id: 'ocean',
         name: '海盐',
-        background: '#e5eef9',
+        background: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
         accent: '#2c6bb2'
       },
       {
         id: 'forest',
         name: '杉林',
-        background: '#e1efe8',
+        background: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
         accent: '#205847'
       }
     ];
 
     const SOUND_PRESETS = [
-      { id: 'bgm1', name: 'Chime 1', src: 'Assets/bgm1.mp3' },
-      { id: 'bgm2', name: 'Chime 2', src: 'Assets/bgm2.mp3' },
-      { id: 'bgm3', name: 'Chime 3', src: 'Assets/bgm3.mp3' },
-      { id: 'bgm4', name: 'Chime 4', src: 'Assets/bgm4.mp3' },
-      { id: 'bgm5', name: 'Chime 5', src: 'Assets/bgm5.mp3' },
-      { id: 'bgm6', name: 'Chime 6', src: 'Assets/bgm6.mp3' },
-      { id: 'bgm7', name: 'Chime 7', src: 'Assets/bgm7.mp3' }
+      { id: 'bgm1', name: '叮咚', emoji: '🔔', src: 'Assets/bgm1.mp3' },
+      { id: 'bgm2', name: '悦铃', emoji: '💃', src: 'Assets/bgm2.mp3' },
+      { id: 'bgm3', name: '清脆', emoji: '🏊', src: 'Assets/bgm3.mp3' },
+      { id: 'bgm4', name: '禅音', emoji: '🧘', src: 'Assets/bgm4.mp3' },
+      { id: 'bgm5', name: '纸声', emoji: '📝', src: 'Assets/bgm5.mp3' },
+      { id: 'bgm6', name: '科技', emoji: '🤖', src: 'Assets/bgm6.mp3' },
+      { id: 'bgm7', name: '风铃', emoji: '🎵', src: 'Assets/bgm7.mp3' },
+      { id: 'bgm8', name: '轻弹', emoji: '🎸', src: 'Assets/bgm8.mp3' },
+      { id: 'bgm9', name: '晨曦', emoji: '🌅', src: 'Assets/bgm9.mp3' }
     ];
 
     const SAMPLE_CARDS = [
@@ -1637,7 +1828,7 @@
         expiryDate: '2026-04-15',
         notes: '每周五晚 8 点，点开卡片会播放自定义音效。',
         themeId: 'rose',
-        backgroundColor: '#f7e9ee',
+        backgroundColor: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
         accentColor: '#cf5f88',
         cardImage: null,
         soundId: 'bgm2',
@@ -1659,7 +1850,7 @@
         expiryDate: '2026-03-29',
         notes: '只剩两节，提醒会在提醒模块展示。',
         themeId: 'mint',
-        backgroundColor: '#e5f7f1',
+        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
         accentColor: '#179d78',
         cardImage: null,
         soundId: 'bgm4',
@@ -1681,7 +1872,7 @@
         expiryDate: '2026-05-06',
         notes: '会员卡详情里可以直接编辑到期时间和备注。',
         themeId: 'forest',
-        backgroundColor: '#edf4ef',
+        backgroundColor: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
         accentColor: '#205847',
         cardImage: null,
         soundId: 'bgm1',
@@ -1703,7 +1894,7 @@
         renewalDate: '2026-04-01',
         notes: '订阅类卡片会在提醒页显示续费提醒。',
         themeId: 'amber',
-        backgroundColor: '#ffe49a',
+        backgroundColor: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
         accentColor: '#bc7f11',
         cardImage: null,
         soundId: 'bgm6',
@@ -1725,7 +1916,7 @@
         renewalDate: '2026-03-27',
         notes: '这里用于演示临近续费提醒。',
         themeId: 'ocean',
-        backgroundColor: '#ebf2fb',
+        backgroundColor: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
         accentColor: '#2c6bb2',
         cardImage: null,
         soundId: 'bgm5',
@@ -1747,7 +1938,7 @@
         expiryDate: '2025-12-31',
         notes: '归档卡片保留在设置页。',
         themeId: 'mint',
-        backgroundColor: '#e5f7f1',
+        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
         accentColor: '#179d78',
         cardImage: null,
         soundId: 'bgm3',
@@ -1844,15 +2035,6 @@
 
     function getCardDateLabel(card) {
       return card.type === 'subscription' ? '续费日期' : '到期日期';
-    }
-
-    function getTypeTag(type) {
-      const map = {
-        class_pass: 'CLASS PASS',
-        membership: 'MEMBERSHIP',
-        subscription: 'SUBSCRIPTION'
-      };
-      return map[type] || String(type || '').toUpperCase();
     }
 
     function formatDate(dateStr) {
@@ -2038,7 +2220,12 @@
     }
 
     function renderHeader() {
-      document.getElementById('headerSubtitle').textContent = '';
+      const map = {
+        cards: '像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。',
+        reminders: '提醒只放在这一页，主页不再承担提醒信息。',
+        settings: '设置页合并归档、备份、通知和全局偏好。'
+      };
+      document.getElementById('headerSubtitle').textContent = map[state.activeTab];
     }
 
     function renderCardsTab() {
@@ -2067,21 +2254,19 @@
         const top = index * 56;
         const z = cards.length - index;
         return `
-          <article class="wallet-card" style="top:${top}px; z-index:${z};" onclick="openDetail('${card.id}')">
+          <article class="wallet-card" style="top:${top}px; z-index:${z}; background:${escapeHtml(card.backgroundColor)};" onclick="openDetail('${card.id}')">
+            ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : ''}
             <div class="wallet-card-body">
-              <div class="wallet-top ${card.cardImage ? 'has-image' : ''}" style="background:${escapeHtml(card.backgroundColor)};">
-                ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : `<div class="wallet-image-icon">${escapeHtml(card.emoji)}</div>`}
-                <div class="wallet-row" style="position:relative; z-index:1;">
-                  <div>
-                    <span class="wallet-type">${escapeHtml(getTypeTag(card.type))}</span>
-                  </div>
+              <div class="wallet-row">
+                <div>
+                  <span class="wallet-type">${escapeHtml(TYPE_META[card.type].icon)} ${escapeHtml(TYPE_META[card.type].label)}</span>
+                  <div class="wallet-name">${escapeHtml(card.name)}</div>
+                  <div class="wallet-meta">${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
                 </div>
+                <div class="wallet-emoji">${escapeHtml(card.emoji)}</div>
               </div>
-              <div class="wallet-bottom-panel">
-                <div class="wallet-name">${escapeHtml(card.name)}</div>
-                <div class="wallet-bottom" style="margin-top:14px;">
-                  ${renderCardMetrics(card)}
-                </div>
+              <div class="wallet-bottom">
+                ${renderCardMetrics(card)}
               </div>
             </div>
           </article>
@@ -2095,12 +2280,12 @@
       if (card.type === 'class_pass') {
         return `
           <div>
-            <div class="wallet-stat-label">Remaining</div>
+            <div class="wallet-stat-label">剩余次数</div>
             <div class="wallet-stat-value">${card.remainingCount}<span style="font-size:14px; font-weight:500; opacity:0.86;"> / ${card.totalCount}</span></div>
           </div>
           <div>
-            <div class="wallet-stat-label">Expires</div>
-            <div class="wallet-stat-value">${escapeHtml(formatDate(card.expiryDate))}</div>
+            <div class="wallet-stat-label">到期日期</div>
+            <div class="wallet-stat-value small">${escapeHtml(formatDate(card.expiryDate))}</div>
           </div>
         `;
       }
@@ -2108,36 +2293,39 @@
       if (card.type === 'membership') {
         return `
           <div>
-            <div class="wallet-stat-label">Status</div>
-            <div class="wallet-stat-value" style="color: var(--success);">Active</div>
+            <div class="wallet-stat-label">状态</div>
+            <div class="wallet-stat-value small">会员有效期内</div>
           </div>
           <div>
-            <div class="wallet-stat-label">Expires</div>
-            <div class="wallet-stat-value">${escapeHtml(formatDate(card.expiryDate))}</div>
+            <div class="wallet-stat-label">到期日期</div>
+            <div class="wallet-stat-value small">${escapeHtml(formatDate(card.expiryDate))}</div>
           </div>
         `;
       }
 
       return `
         <div>
-          <div class="wallet-stat-label">Monthly</div>
-          <div class="wallet-stat-value">${escapeHtml(formatCurrency(card.cost, card.currency))}</div>
+          <div class="wallet-stat-label">金额</div>
+          <div class="wallet-stat-value small">${escapeHtml(formatCurrency(card.cost, card.currency))}</div>
         </div>
         <div>
-          <div class="wallet-stat-label">Renews</div>
-          <div class="wallet-stat-value" style="color: ${card.type === 'subscription' ? '#f08a00' : 'var(--text)'};">${escapeHtml(formatDate(card.renewalDate))}</div>
+          <div class="wallet-stat-label">续费日期</div>
+          <div class="wallet-stat-value small">${escapeHtml(formatDate(card.renewalDate))}</div>
         </div>
       `;
     }
 
     function renderListCard(card) {
       const status = getStatus(card);
+      const progressTone = card.remainingCount <= 2 ? 'danger' : (card.remainingCount / card.totalCount < 0.4 ? 'warning' : '');
+      const progressPct = card.totalCount > 0 ? Math.max(0, Math.min(100, (card.remainingCount / card.totalCount) * 100)) : 0;
+      const sound = getSound(card.soundId);
       return `
-        <article class="list-card">
+        <article class="list-card" style="border-left-color:${escapeHtml(card.accentColor)};">
           <div class="list-head">
             <div>
               <div class="list-title">${escapeHtml(card.name)}</div>
-              <div class="list-copy">${escapeHtml(TYPE_META[card.type].label)} · ${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
+              <div class="list-copy">${escapeHtml(TYPE_META[card.type].label)} · ${escapeHtml(card.category || '未分类')} · ${sound.emoji} ${escapeHtml(sound.name)}</div>
             </div>
             <span class="pill ${status.tone}">${escapeHtml(status.label)}</span>
           </div>
@@ -2152,7 +2340,12 @@
               : ''
             }
           </div>
-          ${card.notes ? `<div class="list-copy" style="margin-top:12px;">${escapeHtml(card.notes)}</div>` : ''}
+          ${card.type === 'class_pass' && card.totalCount > 0 ? `
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill ${progressTone}" style="width:${progressPct}%;"></div>
+            </div>
+          ` : ''}
+          ${card.notes ? `<div class="list-copy" style="margin-top:10px;">${escapeHtml(card.notes)}</div>` : ''}
           <div class="list-actions">
             <button class="list-btn primary" type="button" onclick="openDetail('${card.id}')">查看详情</button>
             <button class="list-btn" type="button" onclick="openCardForm('${card.id}')">编辑</button>
@@ -2168,10 +2361,12 @@
       document.getElementById('reminderMeta').textContent = reminders.length + ' 条';
       document.getElementById('urgentCount').textContent = urgent;
       document.getElementById('windowCount').textContent = state.settings.reminderWindow + ' 天';
+      const urgentBox = document.getElementById('urgentBox');
+      if (urgentBox) urgentBox.classList.toggle('urgent', urgent > 0);
 
       const list = document.getElementById('reminderList');
       list.innerHTML = reminders.length ? reminders.map((item) => `
-        <button class="reminder-item" type="button" onclick="openDetail('${item.cardId}')">
+        <button class="reminder-item tone-${item.tone}" type="button" onclick="openDetail('${item.cardId}')">
           <div>
             <div class="reminder-title">${escapeHtml(item.title)}</div>
             <div class="reminder-copy">${escapeHtml(item.body)}</div>
@@ -2291,6 +2486,7 @@
     function renderSoundRow() {
       document.getElementById('soundRow').innerHTML = SOUND_PRESETS.map((sound) => `
         <button class="sound-chip ${state.selectedSoundId === sound.id ? 'active' : ''}" type="button" onclick="selectSound('${sound.id}')">
+          <span class="sound-chip-emoji">${sound.emoji}</span>
           <strong>${escapeHtml(sound.name)}</strong>
           <span>${sound.id}</span>
         </button>
@@ -2312,13 +2508,9 @@
       document.getElementById(state.activeTab + 'Tab').classList.add('active');
 
       document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.remove('active'));
-      if (state.chatOpen) {
-        document.getElementById('navChat').classList.add('active');
-      } else {
-        if (state.activeTab === 'cards') document.getElementById('navCards').classList.add('active');
-        if (state.activeTab === 'reminders') document.getElementById('navReminders').classList.add('active');
-        if (state.activeTab === 'settings') document.getElementById('navSettings').classList.add('active');
-      }
+      if (state.activeTab === 'cards') document.getElementById('navCards').classList.add('active');
+      if (state.activeTab === 'reminders') document.getElementById('navReminders').classList.add('active');
+      if (state.activeTab === 'settings') document.getElementById('navSettings').classList.add('active');
 
       document.getElementById('viewTabStack').classList.toggle('active', state.cardView === 'stack');
       document.getElementById('viewTabList').classList.toggle('active', state.cardView === 'list');
@@ -2343,9 +2535,6 @@
     }
 
     function switchTab(tab) {
-      if (state.chatOpen) {
-        closeChat();
-      }
       state.activeTab = tab;
       renderApp();
       playUiFeedback();
@@ -2408,21 +2597,19 @@
 
       const status = getStatus(card);
       document.getElementById('detailContent').innerHTML = `
-        <div class="detail-card">
+        <div class="detail-card" style="background:${escapeHtml(card.backgroundColor)};">
+          ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : ''}
           <div class="detail-card-body">
-            <div class="detail-top ${card.cardImage ? 'has-image' : ''}" style="background:${escapeHtml(card.backgroundColor)};">
-              ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : `<div class="wallet-image-icon">${escapeHtml(card.emoji)}</div>`}
-              <div class="wallet-row" style="position:relative; z-index:1;">
-                <div>
-                  <span class="wallet-type">${escapeHtml(getTypeTag(card.type))}</span>
-                </div>
+            <div class="wallet-row">
+              <div>
+                <span class="wallet-type">${escapeHtml(TYPE_META[card.type].icon)} ${escapeHtml(TYPE_META[card.type].label)}</span>
+                <div class="wallet-name">${escapeHtml(card.name)}</div>
+                <div class="wallet-meta">${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
               </div>
+              <div class="wallet-emoji">${escapeHtml(card.emoji)}</div>
             </div>
-            <div class="detail-bottom">
-              <div class="wallet-name">${escapeHtml(card.name)}</div>
-              <div class="wallet-bottom" style="margin-top:14px;">
-                ${renderCardMetrics(card)}
-              </div>
+            <div class="wallet-bottom">
+              ${renderCardMetrics(card)}
             </div>
           </div>
         </div>
@@ -2515,6 +2702,7 @@
       syncFormFields();
       syncUploadBox();
       document.getElementById('formOverlay').classList.add('active');
+      requestAnimationFrame(() => initImgEditorEvents());
       playUiFeedback();
     }
 
@@ -2527,6 +2715,8 @@
       document.getElementById('formOverlay').classList.remove('active');
       state.editingCardId = null;
       state.uploadedImage = null;
+      imgEditor.rawSrc = null;
+      imgEditor.tx = 0; imgEditor.ty = 0; imgEditor.scale = 1;
       document.getElementById('cardForm').reset();
       document.getElementById('imageInput').value = '';
       syncUploadBox();
@@ -2562,21 +2752,33 @@
       document.getElementById('costLabel').textContent = state.selectedType === 'membership' ? '金额 / 年费' : '金额';
     }
 
+    // ─── Image pan/zoom editor state ───────────────────────────────────
+    const imgEditor = {
+      rawSrc: null,    // original data-URL
+      tx: 0, ty: 0,   // translation
+      scale: 1,
+      dragging: false,
+      lastX: 0, lastY: 0,
+      // pinch
+      lastDist: 0
+    };
+
     function syncUploadBox() {
       const box = document.getElementById('imageUploadBox');
-      box.classList.toggle('has-image', Boolean(state.uploadedImage));
-      box.style.backgroundImage = state.uploadedImage ? `url(${state.uploadedImage})` : '';
-      box.innerHTML = state.uploadedImage ? `
-        <div class="upload-copy">
-          <strong>已设置卡面图片</strong>
-          <span>点一下可以重新上传或替换图片。</span>
-        </div>
-      ` : `
-        <div class="upload-copy">
-          <strong>上传自定义卡面</strong>
-          <span>点一下上传图片，没有图片时会自动使用主题色卡面。</span>
-        </div>
-      `;
+      const editorCtr = document.getElementById('imgEditorContainer');
+      if (state.uploadedImage) {
+        box.classList.add('hidden');
+        editorCtr.classList.remove('hidden');
+      } else {
+        box.classList.remove('hidden');
+        editorCtr.classList.add('hidden');
+        box.innerHTML = `
+          <div class="upload-copy">
+            <strong>上传自定义卡面</strong>
+            <span>点一下上传图片，没有图片时会自动使用主题色卡面。</span>
+          </div>
+        `;
+      }
     }
 
     function handleImageUpload(event) {
@@ -2584,10 +2786,150 @@
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
-        state.uploadedImage = reader.result;
-        syncUploadBox();
+        imgEditor.rawSrc = reader.result;
+        openImgEditor(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+
+    function openImgEditor(src) {
+      const container = document.getElementById('imgEditorContainer');
+      const viewport  = document.getElementById('imgEditorViewport');
+      const imgEl     = document.getElementById('imgEditorImg');
+      const uploadBox = document.getElementById('imageUploadBox');
+
+      uploadBox.classList.add('hidden');
+      container.classList.remove('hidden');
+
+      imgEl.onload = () => {
+        // Fit image to viewport on load
+        const vw = viewport.clientWidth  || 360;
+        const vh = viewport.clientHeight || 190;
+        const iw = imgEl.naturalWidth;
+        const ih = imgEl.naturalHeight;
+        const fit = Math.max(vw / iw, vh / ih);
+        imgEditor.scale = fit;
+        imgEditor.tx = (vw - iw * fit) / 2;
+        imgEditor.ty = (vh - ih * fit) / 2;
+        applyImgTransform();
+      };
+      imgEl.src = src;
+    }
+
+    function applyImgTransform() {
+      const imgEl = document.getElementById('imgEditorImg');
+      if (imgEl) {
+        imgEl.style.transform = `translate(${imgEditor.tx}px, ${imgEditor.ty}px) scale(${imgEditor.scale})`;
+      }
+    }
+
+    function resetImgEditor() {
+      if (!imgEditor.rawSrc) return;
+      openImgEditor(imgEditor.rawSrc);
+    }
+
+    function confirmImgCrop() {
+      const viewport = document.getElementById('imgEditorViewport');
+      const imgEl    = document.getElementById('imgEditorImg');
+      if (!imgEl || !imgEl.src) return;
+
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      const canvas = document.createElement('canvas');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width  = vw * dpr;
+      canvas.height = vh * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      // Draw image with current transform
+      const iw = imgEl.naturalWidth;
+      const ih = imgEl.naturalHeight;
+      ctx.drawImage(imgEl, imgEditor.tx, imgEditor.ty, iw * imgEditor.scale, ih * imgEditor.scale);
+
+      state.uploadedImage = canvas.toDataURL('image/jpeg', 0.88);
+      syncUploadBox();
+      showToast('卡面已裁剪确认');
+    }
+
+    // ─── Drag events ───────────────────────────────────────────────────
+    function initImgEditorEvents() {
+      const viewport = document.getElementById('imgEditorViewport');
+      if (!viewport || viewport._editorBound) return;
+      viewport._editorBound = true;
+
+      // Mouse drag
+      viewport.addEventListener('mousedown', (e) => {
+        imgEditor.dragging = true;
+        imgEditor.lastX = e.clientX;
+        imgEditor.lastY = e.clientY;
+        e.preventDefault();
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!imgEditor.dragging) return;
+        imgEditor.tx += e.clientX - imgEditor.lastX;
+        imgEditor.ty += e.clientY - imgEditor.lastY;
+        imgEditor.lastX = e.clientX;
+        imgEditor.lastY = e.clientY;
+        applyImgTransform();
+      });
+      window.addEventListener('mouseup', () => { imgEditor.dragging = false; });
+
+      // Scroll to zoom
+      viewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.08 : 0.93;
+        const rect = viewport.getBoundingClientRect();
+        const cx = e.clientX - rect.left;
+        const cy = e.clientY - rect.top;
+        imgEditor.tx = cx - (cx - imgEditor.tx) * factor;
+        imgEditor.ty = cy - (cy - imgEditor.ty) * factor;
+        imgEditor.scale = Math.min(Math.max(imgEditor.scale * factor, 0.2), 8);
+        applyImgTransform();
+      }, { passive: false });
+
+      // Touch drag + pinch-to-zoom
+      viewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          imgEditor.dragging = true;
+          imgEditor.lastX = e.touches[0].clientX;
+          imgEditor.lastY = e.touches[0].clientY;
+        } else if (e.touches.length === 2) {
+          imgEditor.dragging = false;
+          imgEditor.lastDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+        }
+        e.preventDefault();
+      }, { passive: false });
+
+      viewport.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (e.touches.length === 1 && imgEditor.dragging) {
+          imgEditor.tx += e.touches[0].clientX - imgEditor.lastX;
+          imgEditor.ty += e.touches[0].clientY - imgEditor.lastY;
+          imgEditor.lastX = e.touches[0].clientX;
+          imgEditor.lastY = e.touches[0].clientY;
+          applyImgTransform();
+        } else if (e.touches.length === 2) {
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          const factor = dist / (imgEditor.lastDist || dist);
+          const rect = document.getElementById('imgEditorViewport').getBoundingClientRect();
+          const cx = ((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left;
+          const cy = ((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top;
+          imgEditor.tx = cx - (cx - imgEditor.tx) * factor;
+          imgEditor.ty = cy - (cy - imgEditor.ty) * factor;
+          imgEditor.scale = Math.min(Math.max(imgEditor.scale * factor, 0.2), 8);
+          imgEditor.lastDist = dist;
+          applyImgTransform();
+        }
+      }, { passive: false });
+
+      viewport.addEventListener('touchend', () => { imgEditor.dragging = false; });
     }
 
     function chooseEmoji(type, category) {
@@ -2614,12 +2956,25 @@
       const dateValue = document.getElementById('dueDateInput').value;
       if (!name) {
         showToast('请先填写卡片名称');
+        const btn = document.getElementById('submitBtn');
+        btn.style.animation = '';
+        btn.style.background = '';
+        void btn.offsetWidth;
+        btn.style.background = 'linear-gradient(135deg,#e45a5a,#f07070)';
+        btn.style.animation = 'btn-success-pop 0.35s ease forwards';
+        setTimeout(() => { btn.style.background = ''; btn.style.animation = ''; }, 600);
         return;
       }
       if (!dateValue) {
         showToast('请先填写日期');
         return;
       }
+
+      // Loading state
+      const submitBtn = document.getElementById('submitBtn');
+      const origText = submitBtn.textContent;
+      submitBtn.classList.add('loading');
+      submitBtn.textContent = '保存中';
 
       const theme = getTheme(state.selectedThemeId);
       const now = new Date().toISOString();
@@ -2667,10 +3022,21 @@
       }
 
       persistCards();
-      renderApp();
-      forceCloseForm();
-      showToast(isEditing ? '卡片已更新' : '卡片已添加');
-      playCardSound(card.soundId);
+
+      // Success feedback on button before closing
+      const finalBtn = document.getElementById('submitBtn');
+      if (finalBtn) {
+        finalBtn.classList.remove('loading');
+        finalBtn.classList.add('success');
+        finalBtn.textContent = '✓ 已保存';
+      }
+
+      setTimeout(() => {
+        renderApp();
+        forceCloseForm();
+        showToast(isEditing ? '卡片已更新' : '卡片已添加');
+        playCardSound(card.soundId);
+      }, 420);
     }
 
     function useClass(cardId) {
@@ -2831,7 +3197,6 @@
     function openChat() {
       state.chatOpen = true;
       document.getElementById('chatPanel').classList.add('active');
-      updateNav();
       setTimeout(() => document.getElementById('chatInput').focus(), 100);
       playUiFeedback();
     }
@@ -2839,7 +3204,6 @@
     function closeChat() {
       state.chatOpen = false;
       document.getElementById('chatPanel').classList.remove('active');
-      updateNav();
     }
 
     function askSuggestion(text) {
@@ -2923,6 +3287,7 @@
       registerServiceWorker();
 
       document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+      initImgEditorEvents();
       document.getElementById('backupInput').addEventListener('change', importBackup);
       document.getElementById('cardForm').addEventListener('submit', saveCard);
       document.getElementById('searchInput').addEventListener('input', (event) => {

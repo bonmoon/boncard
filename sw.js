@@ -1,9 +1,21 @@
-const CACHE_NAME = 'cardvault-demo-v1';
+const CACHE_NAME = 'cardvault-demo-v3';
 const APP_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon.svg'
+  './icon.svg',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png',
+  './Assets/bgm1.mp3',
+  './Assets/bgm2.mp3',
+  './Assets/bgm3.mp3',
+  './Assets/bgm4.mp3',
+  './Assets/bgm5.mp3',
+  './Assets/bgm6.mp3',
+  './Assets/bgm7.mp3',
+  './Assets/bgm8.mp3',
+  './Assets/bgm9.mp3'
 ];
 
 self.addEventListener('install', (event) => {
