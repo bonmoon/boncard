@@ -19,13 +19,13 @@
     :root {
       --mint: #2dd4a8;
       --mint-deep: #179d78;
-      --bg: #f6faf8;
-      --bg-soft: #eef5f2;
-      --card: rgba(255, 255, 255, 0.88);
-      --card-strong: rgba(255, 255, 255, 0.96);
-      --text: #16352d;
-      --text-soft: #688078;
-      --line: rgba(22, 53, 45, 0.08);
+      --bg: #ffffff;
+      --bg-soft: #ffffff;
+      --card: #ffffff;
+      --card-strong: #ffffff;
+      --text: #1f2329;
+      --text-soft: #94979c;
+      --line: rgba(31, 35, 41, 0.08);
       --danger: #e45a5a;
       --warning: #f3a61f;
       --success: #1fa971;
@@ -42,10 +42,7 @@
     body {
       font-family: "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at top right, rgba(45, 212, 168, 0.12), transparent 24%),
-        radial-gradient(circle at top left, rgba(255, 216, 194, 0.42), transparent 28%),
-        linear-gradient(180deg, #fbfdfc 0%, var(--bg) 42%, var(--bg-soft) 100%);
+      background: #f9fbfa;
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -69,28 +66,26 @@
       min-height: 100vh;
       padding: calc(var(--safe-top) + 8px) 16px calc(86px + var(--safe-bottom));
       position: relative;
+      background: #f9fbfa;
     }
 
     .header {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 20px;
     }
 
     .header-title {
-      font-size: 30px;
+      font-size: 34px;
       line-height: 1.05;
       font-weight: 700;
       letter-spacing: -0.04em;
     }
 
     .header-subtitle {
-      margin-top: 6px;
-      font-size: 13px;
-      color: var(--text-soft);
-      line-height: 1.5;
+      display: none;
     }
 
     .header-actions {
@@ -100,22 +95,21 @@
     }
 
     .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 15px;
-      background: rgba(255, 255, 255, 0.86);
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #f7f7f7;
+      border: 1px solid rgba(31, 35, 41, 0.03);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: var(--shadow);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
       transition: transform 0.18s ease, background 0.18s ease;
-      backdrop-filter: blur(14px);
     }
 
     .icon-btn.primary {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: #33d0a6;
       color: white;
     }
 
@@ -148,10 +142,19 @@
     .panel {
       background: var(--card);
       border-radius: var(--radius-xl);
-      border: 1px solid rgba(255, 255, 255, 0.72);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
+      border: 1px solid rgba(31, 35, 41, 0.04);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
       overflow: hidden;
+    }
+
+    .cards-panel {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .cards-panel .panel-head {
+      display: none;
     }
 
     .panel-head {
@@ -182,13 +185,13 @@
     }
 
     .segmented {
-      margin: 14px 16px 10px;
+      margin: 0 16px 12px;
       padding: 4px;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 4px;
       border-radius: 16px;
-      background: rgba(22, 53, 45, 0.06);
+      background: #f4f4f4;
     }
 
     .segmented-btn {
@@ -202,9 +205,9 @@
     }
 
     .segmented-btn.active {
-      background: var(--card-strong);
+      background: #ffffff;
       color: var(--text);
-      box-shadow: 0 8px 20px rgba(23, 61, 51, 0.08);
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
     }
 
     .cards-pager {
@@ -222,7 +225,7 @@
     .cards-view {
       min-width: 100%;
       scroll-snap-align: start;
-      padding: 0 16px 16px;
+      padding: 0 16px 18px;
     }
 
     .stack-view {
@@ -237,13 +240,14 @@
       position: absolute;
       left: 0;
       right: 0;
-      height: 220px;
+      height: 228px;
       border-radius: 24px;
       overflow: hidden;
       cursor: pointer;
-      color: white;
-      box-shadow: var(--card-shadow);
-      border: 1px solid rgba(255, 255, 255, 0.26);
+      color: var(--text);
+      background: #ffffff;
+      box-shadow: 0 24px 54px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(31, 35, 41, 0.03);
       transition: transform 0.18s ease;
     }
 
@@ -259,22 +263,35 @@
       object-fit: cover;
     }
 
-    .wallet-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.14) 100%);
-      pointer-events: none;
-    }
-
     .wallet-card-body {
       position: relative;
       z-index: 1;
       height: 100%;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wallet-top {
+      min-height: 142px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: relative;
+    }
+
+    .wallet-top.has-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .wallet-bottom-panel {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.96);
+      padding: 16px 18px 18px;
     }
 
     .wallet-row {
@@ -290,31 +307,37 @@
       gap: 6px;
       padding: 7px 10px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.5);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.03em;
-      backdrop-filter: blur(8px);
+      color: rgba(31, 35, 41, 0.6);
+      text-transform: uppercase;
     }
 
     .wallet-name {
-      margin-top: 10px;
-      font-size: 23px;
+      margin-top: 8px;
+      font-size: 22px;
       line-height: 1.12;
       font-weight: 700;
       letter-spacing: -0.03em;
-      max-width: 220px;
+      max-width: 240px;
     }
 
     .wallet-meta {
-      margin-top: 7px;
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.84);
+      margin-top: 5px;
+      font-size: 12px;
+      color: rgba(31, 35, 41, 0.42);
     }
 
-    .wallet-emoji {
-      font-size: 38px;
+    .wallet-emoji,
+    .wallet-image-icon {
+      font-size: 58px;
       line-height: 1;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -38%);
     }
 
     .wallet-bottom {
@@ -326,20 +349,19 @@
 
     .wallet-stat-label {
       font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: rgba(255, 255, 255, 0.74);
+      color: #a1a1a1;
       margin-bottom: 4px;
     }
 
     .wallet-stat-value {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
       line-height: 1.35;
+      color: var(--text);
     }
 
     .wallet-stat-value.small {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
     }
 
@@ -459,14 +481,14 @@
     .list-btn,
     .sheet-btn.secondary,
     .card-action.secondary {
-      background: rgba(22, 53, 45, 0.06);
+      background: #f4f5f4;
       color: var(--text);
     }
 
     .sheet-btn.primary,
     .card-action.primary,
     .list-btn.primary {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: #33d0a6;
       color: white;
     }
 
@@ -484,9 +506,9 @@
 
     .summary-box {
       padding: 14px;
-      background: rgba(255, 255, 255, 0.8);
+      background: #fafafa;
       border-radius: 18px;
-      border: 1px solid rgba(22, 53, 45, 0.06);
+      border: 1px solid rgba(31, 35, 41, 0.05);
     }
 
     .summary-box strong {
@@ -598,7 +620,7 @@
     }
 
     .toggle.on {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: #33d0a6;
     }
 
     .toggle.on::after {
@@ -615,12 +637,12 @@
     .action-box {
       padding: 16px 14px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.88);
+      background: #fafafa;
       border: 1px solid rgba(22, 53, 45, 0.06);
       cursor: pointer;
       text-align: left;
       min-height: 112px;
-      box-shadow: 0 10px 24px rgba(23, 61, 51, 0.05);
+      box-shadow: none;
     }
 
     .action-box strong {
@@ -643,15 +665,16 @@
       width: 100%;
       max-width: 430px;
       padding: 10px 16px calc(12px + var(--safe-bottom));
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(18px);
-      border-top: 1px solid rgba(22, 53, 45, 0.06);
+      background: rgba(252, 252, 251, 0.98);
+      border-top: 1px solid rgba(31, 35, 41, 0.05);
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -8px 26px rgba(15, 23, 42, 0.03);
       z-index: 60;
     }
 
     .nav-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
     }
 
@@ -670,7 +693,7 @@
 
     .nav-btn.active {
       color: var(--text);
-      background: rgba(45, 212, 168, 0.08);
+      background: rgba(51, 208, 166, 0.1);
     }
 
     .nav-icon {
@@ -690,8 +713,8 @@
 
     .nav-badge {
       position: absolute;
-      top: 8px;
-      right: 26px;
+      top: 4px;
+      right: 20px;
       min-width: 18px;
       height: 18px;
       padding: 0 5px;
@@ -728,7 +751,7 @@
       max-width: 430px;
       max-height: min(88vh, 780px);
       overflow-y: auto;
-      background: #fffefc;
+      background: #ffffff;
       border-radius: 28px 28px 0 0;
       padding: 16px 16px calc(18px + var(--safe-bottom));
       transform: translateY(100%);
@@ -785,27 +808,40 @@
       height: 228px;
       border-radius: 24px;
       overflow: hidden;
-      color: white;
+      color: var(--text);
       position: relative;
-      box-shadow: var(--card-shadow);
+      box-shadow: 0 24px 54px rgba(15, 23, 42, 0.08);
       margin-bottom: 14px;
-    }
-
-    .detail-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(0,0,0,0.16) 100%);
+      background: #ffffff;
     }
 
     .detail-card-body {
       position: relative;
       z-index: 1;
       height: 100%;
+      padding: 0;
+    }
+
+    .detail-top {
+      min-height: 142px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: relative;
+    }
+
+    .detail-top.has-image::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .detail-bottom {
+      height: calc(100% - 142px);
+      background: rgba(255, 255, 255, 0.97);
+      padding: 16px 18px 18px;
     }
 
     .detail-grid {
@@ -1019,9 +1055,7 @@
     .chat-panel {
       position: fixed;
       inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(255, 216, 194, 0.42), transparent 26%),
-        linear-gradient(180deg, #fffefc 0%, #f4faf7 56%, #eef4f1 100%);
+      background: #f9fbfa;
       transform: translateX(100%);
       transition: transform 0.26s ease;
       z-index: 120;
@@ -1102,7 +1136,7 @@
 
     .chat-bubble.user {
       margin-left: auto;
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: #33d0a6;
       color: white;
       border-bottom-right-radius: 8px;
     }
@@ -1119,9 +1153,8 @@
       right: 0;
       bottom: 0;
       padding: 12px 16px calc(12px + var(--safe-bottom));
-      background: rgba(255, 255, 255, 0.94);
+      background: #fbfbfb;
       border-top: 1px solid rgba(22, 53, 45, 0.06);
-      backdrop-filter: blur(16px);
     }
 
     .chat-input-row {
@@ -1141,7 +1174,7 @@
       width: 46px;
       height: 46px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: #33d0a6;
       color: white;
       display: inline-flex;
       align-items: center;
@@ -1194,21 +1227,14 @@
   <div class="app">
     <header class="header">
       <div>
-        <div class="header-title">手机卡片管家</div>
-        <div class="header-subtitle" id="headerSubtitle">像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。</div>
+        <div class="header-title">My cards</div>
+        <div class="header-subtitle" id="headerSubtitle"></div>
       </div>
       <div class="header-actions">
         <button class="icon-btn" type="button" onclick="openSearch()" aria-label="搜索">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="M20 20 17 17"></path>
-          </svg>
-        </button>
-        <button class="icon-btn" type="button" onclick="openChat()" aria-label="AI 助手">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M7 10h10"></path>
-            <path d="M7 14h6"></path>
-            <path d="M5 19l1.6-2.4A7 7 0 0 1 5 12a7 7 0 1 1 14 0 7 7 0 0 1-7 7H5Z"></path>
           </svg>
         </button>
         <button class="icon-btn primary" type="button" onclick="openCardForm()" aria-label="新增卡片">
@@ -1222,7 +1248,7 @@
 
     <main class="main">
       <section class="tab-page active" id="cardsTab">
-        <div class="panel">
+        <div class="panel cards-panel">
           <div class="panel-head">
             <div>
               <div class="panel-title">我的卡片</div>
@@ -1323,7 +1349,7 @@
             <path d="M2 9h20"></path>
           </svg>
         </span>
-        <span class="nav-label">卡片</span>
+        <span class="nav-label">Cards</span>
       </button>
       <button class="nav-btn" id="navReminders" type="button" onclick="switchTab('reminders')">
         <span class="nav-icon">
@@ -1333,7 +1359,17 @@
           </svg>
         </span>
         <span class="nav-badge" id="reminderBadge">0</span>
-        <span class="nav-label">提醒</span>
+        <span class="nav-label">Expiring</span>
+      </button>
+      <button class="nav-btn" id="navChat" type="button" onclick="openChat()">
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <path d="M12 19v3"></path>
+          </svg>
+        </span>
+        <span class="nav-label">AI Chat</span>
       </button>
       <button class="nav-btn" id="navSettings" type="button" onclick="switchTab('settings')">
         <span class="nav-icon">
@@ -1345,7 +1381,7 @@
             <circle cx="12" cy="12" r="3.5"></circle>
           </svg>
         </span>
-        <span class="nav-label">设置</span>
+        <span class="nav-label">Settings</span>
       </button>
     </div>
   </nav>
@@ -1551,31 +1587,31 @@
       {
         id: 'mint',
         name: '薄荷',
-        background: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        background: '#dff5ee',
         accent: '#179d78'
       },
       {
         id: 'rose',
         name: '莓粉',
-        background: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
+        background: '#f8e4ea',
         accent: '#cf5f88'
       },
       {
         id: 'amber',
         name: '琥珀',
-        background: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
+        background: '#ffe49a',
         accent: '#bc7f11'
       },
       {
         id: 'ocean',
         name: '海盐',
-        background: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
+        background: '#e5eef9',
         accent: '#2c6bb2'
       },
       {
         id: 'forest',
         name: '杉林',
-        background: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
+        background: '#e1efe8',
         accent: '#205847'
       }
     ];
@@ -1601,7 +1637,7 @@
         expiryDate: '2026-04-15',
         notes: '每周五晚 8 点，点开卡片会播放自定义音效。',
         themeId: 'rose',
-        backgroundColor: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
+        backgroundColor: '#f7e9ee',
         accentColor: '#cf5f88',
         cardImage: null,
         soundId: 'bgm2',
@@ -1623,7 +1659,7 @@
         expiryDate: '2026-03-29',
         notes: '只剩两节，提醒会在提醒模块展示。',
         themeId: 'mint',
-        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        backgroundColor: '#e5f7f1',
         accentColor: '#179d78',
         cardImage: null,
         soundId: 'bgm4',
@@ -1645,7 +1681,7 @@
         expiryDate: '2026-05-06',
         notes: '会员卡详情里可以直接编辑到期时间和备注。',
         themeId: 'forest',
-        backgroundColor: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
+        backgroundColor: '#edf4ef',
         accentColor: '#205847',
         cardImage: null,
         soundId: 'bgm1',
@@ -1667,7 +1703,7 @@
         renewalDate: '2026-04-01',
         notes: '订阅类卡片会在提醒页显示续费提醒。',
         themeId: 'amber',
-        backgroundColor: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
+        backgroundColor: '#ffe49a',
         accentColor: '#bc7f11',
         cardImage: null,
         soundId: 'bgm6',
@@ -1689,7 +1725,7 @@
         renewalDate: '2026-03-27',
         notes: '这里用于演示临近续费提醒。',
         themeId: 'ocean',
-        backgroundColor: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
+        backgroundColor: '#ebf2fb',
         accentColor: '#2c6bb2',
         cardImage: null,
         soundId: 'bgm5',
@@ -1711,7 +1747,7 @@
         expiryDate: '2025-12-31',
         notes: '归档卡片保留在设置页。',
         themeId: 'mint',
-        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        backgroundColor: '#e5f7f1',
         accentColor: '#179d78',
         cardImage: null,
         soundId: 'bgm3',
@@ -1808,6 +1844,15 @@
 
     function getCardDateLabel(card) {
       return card.type === 'subscription' ? '续费日期' : '到期日期';
+    }
+
+    function getTypeTag(type) {
+      const map = {
+        class_pass: 'CLASS PASS',
+        membership: 'MEMBERSHIP',
+        subscription: 'SUBSCRIPTION'
+      };
+      return map[type] || String(type || '').toUpperCase();
     }
 
     function formatDate(dateStr) {
@@ -1993,12 +2038,7 @@
     }
 
     function renderHeader() {
-      const map = {
-        cards: '像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。',
-        reminders: '提醒只放在这一页，主页不再承担提醒信息。',
-        settings: '设置页合并归档、备份、通知和全局偏好。'
-      };
-      document.getElementById('headerSubtitle').textContent = map[state.activeTab];
+      document.getElementById('headerSubtitle').textContent = '';
     }
 
     function renderCardsTab() {
@@ -2027,19 +2067,21 @@
         const top = index * 56;
         const z = cards.length - index;
         return `
-          <article class="wallet-card" style="top:${top}px; z-index:${z}; background:${escapeHtml(card.backgroundColor)};" onclick="openDetail('${card.id}')">
-            ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : ''}
+          <article class="wallet-card" style="top:${top}px; z-index:${z};" onclick="openDetail('${card.id}')">
             <div class="wallet-card-body">
-              <div class="wallet-row">
-                <div>
-                  <span class="wallet-type">${escapeHtml(TYPE_META[card.type].icon)} ${escapeHtml(TYPE_META[card.type].label)}</span>
-                  <div class="wallet-name">${escapeHtml(card.name)}</div>
-                  <div class="wallet-meta">${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
+              <div class="wallet-top ${card.cardImage ? 'has-image' : ''}" style="background:${escapeHtml(card.backgroundColor)};">
+                ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : `<div class="wallet-image-icon">${escapeHtml(card.emoji)}</div>`}
+                <div class="wallet-row" style="position:relative; z-index:1;">
+                  <div>
+                    <span class="wallet-type">${escapeHtml(getTypeTag(card.type))}</span>
+                  </div>
                 </div>
-                <div class="wallet-emoji">${escapeHtml(card.emoji)}</div>
               </div>
-              <div class="wallet-bottom">
-                ${renderCardMetrics(card)}
+              <div class="wallet-bottom-panel">
+                <div class="wallet-name">${escapeHtml(card.name)}</div>
+                <div class="wallet-bottom" style="margin-top:14px;">
+                  ${renderCardMetrics(card)}
+                </div>
               </div>
             </div>
           </article>
@@ -2053,12 +2095,12 @@
       if (card.type === 'class_pass') {
         return `
           <div>
-            <div class="wallet-stat-label">剩余次数</div>
+            <div class="wallet-stat-label">Remaining</div>
             <div class="wallet-stat-value">${card.remainingCount}<span style="font-size:14px; font-weight:500; opacity:0.86;"> / ${card.totalCount}</span></div>
           </div>
           <div>
-            <div class="wallet-stat-label">到期日期</div>
-            <div class="wallet-stat-value small">${escapeHtml(formatDate(card.expiryDate))}</div>
+            <div class="wallet-stat-label">Expires</div>
+            <div class="wallet-stat-value">${escapeHtml(formatDate(card.expiryDate))}</div>
           </div>
         `;
       }
@@ -2066,24 +2108,24 @@
       if (card.type === 'membership') {
         return `
           <div>
-            <div class="wallet-stat-label">状态</div>
-            <div class="wallet-stat-value small">会员有效期内</div>
+            <div class="wallet-stat-label">Status</div>
+            <div class="wallet-stat-value" style="color: var(--success);">Active</div>
           </div>
           <div>
-            <div class="wallet-stat-label">到期日期</div>
-            <div class="wallet-stat-value small">${escapeHtml(formatDate(card.expiryDate))}</div>
+            <div class="wallet-stat-label">Expires</div>
+            <div class="wallet-stat-value">${escapeHtml(formatDate(card.expiryDate))}</div>
           </div>
         `;
       }
 
       return `
         <div>
-          <div class="wallet-stat-label">金额</div>
-          <div class="wallet-stat-value small">${escapeHtml(formatCurrency(card.cost, card.currency))}</div>
+          <div class="wallet-stat-label">Monthly</div>
+          <div class="wallet-stat-value">${escapeHtml(formatCurrency(card.cost, card.currency))}</div>
         </div>
         <div>
-          <div class="wallet-stat-label">续费日期</div>
-          <div class="wallet-stat-value small">${escapeHtml(formatDate(card.renewalDate))}</div>
+          <div class="wallet-stat-label">Renews</div>
+          <div class="wallet-stat-value" style="color: ${card.type === 'subscription' ? '#f08a00' : 'var(--text)'};">${escapeHtml(formatDate(card.renewalDate))}</div>
         </div>
       `;
     }
@@ -2270,9 +2312,13 @@
       document.getElementById(state.activeTab + 'Tab').classList.add('active');
 
       document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.remove('active'));
-      if (state.activeTab === 'cards') document.getElementById('navCards').classList.add('active');
-      if (state.activeTab === 'reminders') document.getElementById('navReminders').classList.add('active');
-      if (state.activeTab === 'settings') document.getElementById('navSettings').classList.add('active');
+      if (state.chatOpen) {
+        document.getElementById('navChat').classList.add('active');
+      } else {
+        if (state.activeTab === 'cards') document.getElementById('navCards').classList.add('active');
+        if (state.activeTab === 'reminders') document.getElementById('navReminders').classList.add('active');
+        if (state.activeTab === 'settings') document.getElementById('navSettings').classList.add('active');
+      }
 
       document.getElementById('viewTabStack').classList.toggle('active', state.cardView === 'stack');
       document.getElementById('viewTabList').classList.toggle('active', state.cardView === 'list');
@@ -2297,6 +2343,9 @@
     }
 
     function switchTab(tab) {
+      if (state.chatOpen) {
+        closeChat();
+      }
       state.activeTab = tab;
       renderApp();
       playUiFeedback();
@@ -2359,19 +2408,21 @@
 
       const status = getStatus(card);
       document.getElementById('detailContent').innerHTML = `
-        <div class="detail-card" style="background:${escapeHtml(card.backgroundColor)};">
-          ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : ''}
+        <div class="detail-card">
           <div class="detail-card-body">
-            <div class="wallet-row">
-              <div>
-                <span class="wallet-type">${escapeHtml(TYPE_META[card.type].icon)} ${escapeHtml(TYPE_META[card.type].label)}</span>
-                <div class="wallet-name">${escapeHtml(card.name)}</div>
-                <div class="wallet-meta">${escapeHtml(card.category || '未分类')} · ${escapeHtml(soundName(card.soundId))}</div>
+            <div class="detail-top ${card.cardImage ? 'has-image' : ''}" style="background:${escapeHtml(card.backgroundColor)};">
+              ${card.cardImage ? `<img class="wallet-image" src="${card.cardImage}" alt="${escapeHtml(card.name)}">` : `<div class="wallet-image-icon">${escapeHtml(card.emoji)}</div>`}
+              <div class="wallet-row" style="position:relative; z-index:1;">
+                <div>
+                  <span class="wallet-type">${escapeHtml(getTypeTag(card.type))}</span>
+                </div>
               </div>
-              <div class="wallet-emoji">${escapeHtml(card.emoji)}</div>
             </div>
-            <div class="wallet-bottom">
-              ${renderCardMetrics(card)}
+            <div class="detail-bottom">
+              <div class="wallet-name">${escapeHtml(card.name)}</div>
+              <div class="wallet-bottom" style="margin-top:14px;">
+                ${renderCardMetrics(card)}
+              </div>
             </div>
           </div>
         </div>
@@ -2780,6 +2831,7 @@
     function openChat() {
       state.chatOpen = true;
       document.getElementById('chatPanel').classList.add('active');
+      updateNav();
       setTimeout(() => document.getElementById('chatInput').focus(), 100);
       playUiFeedback();
     }
@@ -2787,6 +2839,7 @@
     function closeChat() {
       state.chatOpen = false;
       document.getElementById('chatPanel').classList.remove('active');
+      updateNav();
     }
 
     function askSuggestion(text) {
