@@ -1,11 +1,11 @@
-const CACHE_NAME = 'cardvault-demo-v3';
+const CACHE_NAME = 'cardvault-demo-v4';
 const APP_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon.svg',
   './icon-192.png',
   './icon-512.png',
+  './appicon.png',
   './apple-touch-icon.png',
   './Assets/bgm1.mp3',
   './Assets/bgm2.mp3',
