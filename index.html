@@ -1054,16 +1054,36 @@
     }
 
     /* ── Image pan/zoom editor ── */
+    .crop-sheet {
+      max-height: min(92vh, 900px);
+      padding-bottom: calc(20px + var(--safe-bottom));
+    }
+
+    .crop-stage {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
     .img-editor-wrap {
       border-radius: 22px;
       overflow: hidden;
       position: relative;
       background: #111;
-      height: 190px;
+      height: min(52vh, 480px);
       touch-action: none;
       user-select: none;
       cursor: grab;
       border: 2px solid rgba(22, 53, 45, 0.1);
+    }
+
+    .crop-frame {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: 22px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.68),
+        inset 0 0 0 999px rgba(0, 0, 0, 0.16);
     }
 
     .img-editor-wrap:active { cursor: grabbing; }
@@ -1108,6 +1128,80 @@
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+
+    .img-editor-preview-card.large {
+      width: 100%;
+      max-width: 240px;
+      border-radius: 22px;
+      box-shadow: 0 12px 28px rgba(18, 54, 46, 0.08);
+    }
+
+    .zoom-control {
+      display: grid;
+      grid-template-columns: 40px 1fr 40px auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .zoom-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid rgba(22, 53, 45, 0.08);
+      background: rgba(22, 53, 45, 0.04);
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .zoom-value {
+      min-width: 52px;
+      text-align: right;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-soft);
+    }
+
+    .zoom-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(22, 53, 45, 0.12);
+      outline: none;
+    }
+
+    .zoom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid var(--mint-deep);
+      box-shadow: 0 4px 12px rgba(23, 157, 120, 0.2);
+      cursor: pointer;
+    }
+
+    .zoom-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid var(--mint-deep);
+      box-shadow: 0 4px 12px rgba(23, 157, 120, 0.2);
+      cursor: pointer;
+    }
+
+    .crop-helper {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.5;
     }
 
     .img-editor-toolbar {
@@ -1779,25 +1873,7 @@
               </div>
             </div>
           </div>
-          <div id="imgEditorContainer" class="hidden">
-            <div class="img-editor-wrap" id="imgEditorViewport">
-              <img id="imgEditorImg" src="" alt="卡面预览">
-            </div>
-            <div class="img-editor-preview">
-              <span class="img-editor-preview-copy">拖动和缩放上方图片，右侧会实时显示裁剪后的卡面效果。</span>
-              <div class="img-editor-preview-card">
-                <img id="imgEditorPreview" src="" alt="裁剪实时预览">
-              </div>
-            </div>
-            <div class="img-editor-toolbar">
-              <span class="img-editor-hint">拖动移位 · 双指或滚轮缩放</span>
-              <div class="img-editor-actions">
-                <button class="img-editor-btn" type="button" onclick="resetImgEditor()">重置</button>
-                <button class="img-editor-btn" type="button" onclick="document.getElementById('imageInput').click()">换图</button>
-                <button class="img-editor-btn primary" type="button" onclick="confirmImgCrop()">确认裁剪</button>
-              </div>
-            </div>
-          </div>
+          <div class="crop-helper">上传后会进入裁剪界面，你可以拖动、缩放，并实时看到最终卡面效果。</div>
           <input id="imageInput" class="hidden" type="file" accept="image/*">
         </div>
 
@@ -1811,6 +1887,56 @@
           <button class="sheet-btn primary" type="submit" id="submitBtn">保存卡片</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="imageCropOverlay" onclick="closeImgEditor(event)">
+    <div class="sheet crop-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div>
+          <div class="sheet-title">裁剪卡面</div>
+          <div class="sheet-copy">拖动图片位置，配合滑杆缩放。下方会实时显示最终卡片效果。</div>
+        </div>
+        <button class="sheet-close" type="button" onclick="forceCloseImgEditor()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div id="imgEditorContainer">
+        <div class="crop-stage">
+          <div class="img-editor-wrap" id="imgEditorViewport">
+            <img id="imgEditorImg" src="" alt="卡面裁剪预览">
+          </div>
+          <div class="crop-frame"></div>
+        </div>
+
+        <div class="zoom-control">
+          <button class="zoom-btn" type="button" onclick="adjustImgZoom(-0.18)" aria-label="缩小">-</button>
+          <input class="zoom-slider" id="imgZoomSlider" type="range" min="100" max="400" step="1" value="100" oninput="handleImgZoomChange(event)">
+          <button class="zoom-btn" type="button" onclick="adjustImgZoom(0.18)" aria-label="放大">+</button>
+          <span class="zoom-value" id="imgZoomValue">100%</span>
+        </div>
+
+        <div class="img-editor-preview">
+          <span class="img-editor-preview-copy">这里是实际会显示在卡片上的最终效果预览。</span>
+          <div class="img-editor-preview-card large">
+            <img id="imgEditorPreview" src="" alt="最终卡面预览">
+          </div>
+        </div>
+
+        <div class="img-editor-toolbar">
+          <span class="img-editor-hint">支持拖动移位、双指缩放，也可以直接拖动上面的缩放滑杆。</span>
+          <div class="img-editor-actions">
+            <button class="img-editor-btn" type="button" onclick="resetImgEditor()">重置</button>
+            <button class="img-editor-btn" type="button" onclick="document.getElementById('imageInput').click()">换图</button>
+            <button class="img-editor-btn primary" type="button" onclick="confirmImgCrop()">确认裁剪</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2813,12 +2939,15 @@
       state.uploadedImage = null;
       imgEditor.rawSrc = null;
       imgEditor.isOpen = false;
+      imgEditor.dragging = false;
       imgEditor.tx = 0; imgEditor.ty = 0; imgEditor.scale = 1;
       imgEditor.minScale = 1;
+      imgEditor.maxScale = 4;
       if (imgEditor.previewFrame) {
         cancelAnimationFrame(imgEditor.previewFrame);
         imgEditor.previewFrame = 0;
       }
+      syncImgEditorVisibility();
       document.getElementById('cardForm').reset();
       document.getElementById('imageInput').value = '';
       const cropPreview = document.getElementById('imgEditorPreview');
@@ -2863,6 +2992,7 @@
       tx: 0, ty: 0,   // translation
       scale: 1,
       minScale: 1,
+      maxScale: 4,
       dragging: false,
       lastX: 0, lastY: 0,
       isOpen: false,
@@ -2884,17 +3014,7 @@
       const box = document.getElementById('imageUploadBox');
       const previewBox = document.getElementById('imagePreviewBox');
       const previewImg = document.getElementById('imagePreviewImg');
-      const editorCtr = document.getElementById('imgEditorContainer');
-      if (!box || !previewBox || !previewImg || !editorCtr) return;
-
-      if (imgEditor.isOpen) {
-        box.classList.add('hidden');
-        previewBox.classList.add('hidden');
-        editorCtr.classList.remove('hidden');
-        return;
-      }
-
-      editorCtr.classList.add('hidden');
+      if (!box || !previewBox || !previewImg) return;
 
       if (state.uploadedImage) {
         previewImg.src = state.uploadedImage;
@@ -2925,6 +3045,79 @@
       event.target.value = '';
     }
 
+    function syncImgEditorVisibility() {
+      const overlay = document.getElementById('imageCropOverlay');
+      if (!overlay) return;
+      overlay.classList.toggle('active', imgEditor.isOpen);
+    }
+
+    function getImgEditorMetrics() {
+      const viewport = document.getElementById('imgEditorViewport');
+      const imgEl = document.getElementById('imgEditorImg');
+      if (!viewport || !imgEl || !imgEl.naturalWidth || !imgEl.naturalHeight) return null;
+      return {
+        viewport,
+        imgEl,
+        vw: viewport.clientWidth || 360,
+        vh: viewport.clientHeight || 190,
+        width: imgEl.naturalWidth * imgEditor.scale,
+        height: imgEl.naturalHeight * imgEditor.scale
+      };
+    }
+
+    function clampImgEditorPosition() {
+      const metrics = getImgEditorMetrics();
+      if (!metrics) return;
+      const { vw, vh, width, height } = metrics;
+
+      if (width <= vw) {
+        imgEditor.tx = (vw - width) / 2;
+      } else {
+        imgEditor.tx = Math.min(0, Math.max(vw - width, imgEditor.tx));
+      }
+
+      if (height <= vh) {
+        imgEditor.ty = (vh - height) / 2;
+      } else {
+        imgEditor.ty = Math.min(0, Math.max(vh - height, imgEditor.ty));
+      }
+    }
+
+    function updateImgZoomUi() {
+      const slider = document.getElementById('imgZoomSlider');
+      const value = document.getElementById('imgZoomValue');
+      if (!slider || !value) return;
+      const pct = Math.round((imgEditor.scale / imgEditor.minScale) * 100);
+      slider.value = String(Math.max(100, Math.min(400, pct)));
+      value.textContent = pct + '%';
+    }
+
+    function setImgScale(nextScale, anchorX, anchorY) {
+      const metrics = getImgEditorMetrics();
+      if (!metrics) return;
+      const { vw, vh } = metrics;
+      const safeScale = Math.min(Math.max(nextScale, imgEditor.minScale), imgEditor.maxScale);
+      const cx = anchorX == null ? vw / 2 : anchorX;
+      const cy = anchorY == null ? vh / 2 : anchorY;
+      const ratio = safeScale / imgEditor.scale;
+
+      imgEditor.tx = cx - (cx - imgEditor.tx) * ratio;
+      imgEditor.ty = cy - (cy - imgEditor.ty) * ratio;
+      imgEditor.scale = safeScale;
+      clampImgEditorPosition();
+      applyImgTransform();
+    }
+
+    function handleImgZoomChange(event) {
+      const ratio = Number(event.target.value || 100) / 100;
+      setImgScale(imgEditor.minScale * ratio);
+    }
+
+    function adjustImgZoom(step) {
+      const ratio = (imgEditor.scale / imgEditor.minScale) + step;
+      setImgScale(imgEditor.minScale * ratio);
+    }
+
     function openImgEditor(src) {
       const viewport  = document.getElementById('imgEditorViewport');
       const imgEl     = document.getElementById('imgEditorImg');
@@ -2932,20 +3125,25 @@
 
       imgEditor.rawSrc = src;
       imgEditor.isOpen = true;
-      syncUploadBox();
+      syncImgEditorVisibility();
 
       imgEl.onload = () => {
-        const vw = viewport.clientWidth  || 360;
-        const vh = viewport.clientHeight || 190;
-        const iw = imgEl.naturalWidth;
-        const ih = imgEl.naturalHeight;
-        const fit = Math.max(vw / iw, vh / ih);
-        imgEditor.minScale = fit;
-        imgEditor.scale = fit;
-        imgEditor.tx = (vw - iw * fit) / 2;
-        imgEditor.ty = (vh - ih * fit) / 2;
-        applyImgTransform();
+        requestAnimationFrame(() => {
+          const vw = viewport.clientWidth  || 360;
+          const vh = viewport.clientHeight || 190;
+          const iw = imgEl.naturalWidth;
+          const ih = imgEl.naturalHeight;
+          const fit = Math.max(vw / iw, vh / ih);
+          imgEditor.minScale = fit;
+          imgEditor.maxScale = fit * 4;
+          imgEditor.scale = fit;
+          imgEditor.tx = (vw - iw * fit) / 2;
+          imgEditor.ty = (vh - ih * fit) / 2;
+          clampImgEditorPosition();
+          applyImgTransform();
+        });
       };
+      imgEl.removeAttribute('src');
       imgEl.src = src;
     }
 
@@ -2954,12 +3152,32 @@
       if (imgEl) {
         imgEl.style.transform = `translate(${imgEditor.tx}px, ${imgEditor.ty}px) scale(${imgEditor.scale})`;
       }
+      updateImgZoomUi();
       queueCropPreview();
     }
 
     function resetImgEditor() {
       if (!imgEditor.rawSrc) return;
       openImgEditor(imgEditor.rawSrc);
+    }
+
+    function closeImgEditor(event) {
+      if (event && event.target !== event.currentTarget) return;
+      forceCloseImgEditor();
+    }
+
+    function forceCloseImgEditor() {
+      imgEditor.isOpen = false;
+      imgEditor.dragging = false;
+      syncImgEditorVisibility();
+      if (!state.uploadedImage) {
+        imgEditor.rawSrc = null;
+      }
+      const slider = document.getElementById('imgZoomSlider');
+      const value = document.getElementById('imgZoomValue');
+      if (slider) slider.value = '100';
+      if (value) value.textContent = '100%';
+      syncUploadBox();
     }
 
     function createCroppedImageDataURL(outputWidth = 960, quality = 0.88) {
@@ -3011,6 +3229,7 @@
       imgEditor.isOpen = false;
       const preview = document.getElementById('imgEditorPreview');
       if (preview) preview.removeAttribute('src');
+      syncImgEditorVisibility();
       syncUploadBox();
       showToast('已移除卡面图片');
     }
@@ -3020,6 +3239,7 @@
       if (!nextImage) return;
       state.uploadedImage = nextImage;
       imgEditor.isOpen = false;
+      syncImgEditorVisibility();
       syncUploadBox();
       showToast('卡面已裁剪确认');
     }
@@ -3043,6 +3263,7 @@
         imgEditor.ty += e.clientY - imgEditor.lastY;
         imgEditor.lastX = e.clientX;
         imgEditor.lastY = e.clientY;
+        clampImgEditorPosition();
         applyImgTransform();
       });
       window.addEventListener('mouseup', () => { imgEditor.dragging = false; });
@@ -3054,10 +3275,7 @@
         const rect = viewport.getBoundingClientRect();
         const cx = e.clientX - rect.left;
         const cy = e.clientY - rect.top;
-        imgEditor.tx = cx - (cx - imgEditor.tx) * factor;
-        imgEditor.ty = cy - (cy - imgEditor.ty) * factor;
-        imgEditor.scale = Math.min(Math.max(imgEditor.scale * factor, imgEditor.minScale), 8);
-        applyImgTransform();
+        setImgScale(imgEditor.scale * factor, cx, cy);
       }, { passive: false });
 
       // Touch drag + pinch-to-zoom
@@ -3083,6 +3301,7 @@
           imgEditor.ty += e.touches[0].clientY - imgEditor.lastY;
           imgEditor.lastX = e.touches[0].clientX;
           imgEditor.lastY = e.touches[0].clientY;
+          clampImgEditorPosition();
           applyImgTransform();
         } else if (e.touches.length === 2) {
           const dist = Math.hypot(
@@ -3093,11 +3312,8 @@
           const rect = document.getElementById('imgEditorViewport').getBoundingClientRect();
           const cx = ((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left;
           const cy = ((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top;
-          imgEditor.tx = cx - (cx - imgEditor.tx) * factor;
-          imgEditor.ty = cy - (cy - imgEditor.ty) * factor;
-          imgEditor.scale = Math.min(Math.max(imgEditor.scale * factor, imgEditor.minScale), 8);
+          setImgScale(imgEditor.scale * factor, cx, cy);
           imgEditor.lastDist = dist;
-          applyImgTransform();
         }
       }, { passive: false });
 
