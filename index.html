@@ -47,10 +47,7 @@
     body {
       font-family: "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at top right, rgba(45, 212, 168, 0.12), transparent 24%),
-        radial-gradient(circle at top left, rgba(255, 216, 194, 0.42), transparent 28%),
-        linear-gradient(180deg, #fbfdfc 0%, var(--bg) 42%, var(--bg-soft) 100%);
+      background: #ffffff;
       min-height: 100vh;
       overflow-x: hidden;
     }
@@ -92,10 +89,7 @@
     }
 
     .header-subtitle {
-      margin-top: 6px;
-      font-size: 13px;
-      color: var(--text-soft);
-      line-height: 1.5;
+      display: none;
     }
 
     .header-actions {
@@ -120,7 +114,7 @@
     }
 
     .icon-btn.primary {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: var(--mint);
       color: white;
     }
 
@@ -471,7 +465,7 @@
     .sheet-btn.primary,
     .card-action.primary,
     .list-btn.primary {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: var(--mint);
       color: white;
     }
 
@@ -603,7 +597,7 @@
     }
 
     .toggle.on {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: var(--mint);
     }
 
     .toggle.on::after {
@@ -656,7 +650,7 @@
 
     .nav-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
     }
 
@@ -678,9 +672,9 @@
     }
 
     .nav-btn.active .nav-icon {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
-      color: white;
-      box-shadow: 0 6px 16px rgba(23, 157, 120, 0.32);
+      background: rgba(45, 212, 168, 0.14);
+      color: var(--mint);
+      box-shadow: none;
     }
 
     .nav-btn.active .nav-label {
@@ -1237,7 +1231,7 @@
     }
 
     .img-editor-btn.primary {
-      background: linear-gradient(135deg, var(--mint-deep), var(--mint));
+      background: var(--mint);
       color: white;
     }
 
@@ -1570,21 +1564,14 @@
   <div class="app">
     <header class="header">
       <div>
-        <div class="header-title">手机卡片管家</div>
-        <div class="header-subtitle" id="headerSubtitle">像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。</div>
+        <div class="header-title">My cards</div>
+        <div class="header-subtitle" id="headerSubtitle"></div>
       </div>
       <div class="header-actions">
         <button class="icon-btn" type="button" onclick="openSearch()" aria-label="搜索">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="M20 20 17 17"></path>
-          </svg>
-        </button>
-        <button class="icon-btn" type="button" onclick="openChat()" aria-label="AI 助手">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M7 10h10"></path>
-            <path d="M7 14h6"></path>
-            <path d="M5 19l1.6-2.4A7 7 0 0 1 5 12a7 7 0 1 1 14 0 7 7 0 0 1-7 7H5Z"></path>
           </svg>
         </button>
         <button class="icon-btn primary" type="button" onclick="openCardForm()" aria-label="新增卡片">
@@ -1703,7 +1690,7 @@
             <path d="M2 9h20"></path>
           </svg>
         </span>
-        <span class="nav-label">卡片</span>
+        <span class="nav-label">Cards</span>
       </button>
       <button class="nav-btn" id="navReminders" type="button" onclick="switchTab('reminders')">
         <span class="nav-icon">
@@ -1713,7 +1700,18 @@
           </svg>
         </span>
         <span class="nav-badge" id="reminderBadge">0</span>
-        <span class="nav-label">提醒</span>
+        <span class="nav-label">Expiring</span>
+      </button>
+      <button class="nav-btn" id="navChat" type="button" onclick="openChat()">
+        <span class="nav-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v10"></path>
+            <path d="M8 7v6a4 4 0 0 0 8 0V7"></path>
+            <path d="M5 11a7 7 0 0 0 14 0"></path>
+            <path d="M12 18v3"></path>
+          </svg>
+        </span>
+        <span class="nav-label">AI Chat</span>
       </button>
       <button class="nav-btn" id="navSettings" type="button" onclick="switchTab('settings')">
         <span class="nav-icon">
@@ -1725,7 +1723,7 @@
             <circle cx="12" cy="12" r="3.5"></circle>
           </svg>
         </span>
-        <span class="nav-label">设置</span>
+        <span class="nav-label">Settings</span>
       </button>
     </div>
   </nav>
@@ -1995,31 +1993,31 @@
       {
         id: 'mint',
         name: '薄荷',
-        background: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        background: '#7fd8bc',
         accent: '#179d78'
       },
       {
         id: 'rose',
         name: '莓粉',
-        background: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
+        background: '#e7a8bf',
         accent: '#cf5f88'
       },
       {
         id: 'amber',
         name: '琥珀',
-        background: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
+        background: '#f2ce73',
         accent: '#bc7f11'
       },
       {
         id: 'ocean',
         name: '海盐',
-        background: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
+        background: '#93b9ea',
         accent: '#2c6bb2'
       },
       {
         id: 'forest',
         name: '杉林',
-        background: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
+        background: '#84baa4',
         accent: '#205847'
       }
     ];
@@ -2047,7 +2045,7 @@
         expiryDate: '2026-04-15',
         notes: '每周五晚 8 点，点开卡片会播放自定义音效。',
         themeId: 'rose',
-        backgroundColor: 'linear-gradient(135deg, #ef89ae 0%, #f7bfd3 58%, #ffe7dc 100%)',
+        backgroundColor: '#e7a8bf',
         accentColor: '#cf5f88',
         cardImage: null,
         soundId: 'bgm2',
@@ -2069,7 +2067,7 @@
         expiryDate: '2026-03-29',
         notes: '只剩两节，提醒会在提醒模块展示。',
         themeId: 'mint',
-        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        backgroundColor: '#7fd8bc',
         accentColor: '#179d78',
         cardImage: null,
         soundId: 'bgm4',
@@ -2091,7 +2089,7 @@
         expiryDate: '2026-05-06',
         notes: '会员卡详情里可以直接编辑到期时间和备注。',
         themeId: 'forest',
-        backgroundColor: 'linear-gradient(135deg, #2d7964 0%, #73af96 58%, #daf2e8 100%)',
+        backgroundColor: '#84baa4',
         accentColor: '#205847',
         cardImage: null,
         soundId: 'bgm1',
@@ -2113,7 +2111,7 @@
         renewalDate: '2026-04-01',
         notes: '订阅类卡片会在提醒页显示续费提醒。',
         themeId: 'amber',
-        backgroundColor: 'linear-gradient(135deg, #e6ad46 0%, #f6d48a 58%, #fff2da 100%)',
+        backgroundColor: '#f2ce73',
         accentColor: '#bc7f11',
         cardImage: null,
         soundId: 'bgm6',
@@ -2135,7 +2133,7 @@
         renewalDate: '2026-03-27',
         notes: '这里用于演示临近续费提醒。',
         themeId: 'ocean',
-        backgroundColor: 'linear-gradient(135deg, #4f89d7 0%, #92c2ff 56%, #e0efff 100%)',
+        backgroundColor: '#93b9ea',
         accentColor: '#2c6bb2',
         cardImage: null,
         soundId: 'bgm5',
@@ -2157,7 +2155,7 @@
         expiryDate: '2025-12-31',
         notes: '归档卡片保留在设置页。',
         themeId: 'mint',
-        backgroundColor: 'linear-gradient(135deg, #24b68a 0%, #8fe1c4 56%, #ffe6cf 100%)',
+        backgroundColor: '#7fd8bc',
         accentColor: '#179d78',
         cardImage: null,
         soundId: 'bgm3',
@@ -2209,6 +2207,7 @@
     function normalizeCard(card) {
       const theme = getTheme(card.themeId || 'mint');
       const type = card.type || 'membership';
+      const legacyBackground = String(card.backgroundColor || '');
       const normalized = {
         id: String(card.id || Date.now()),
         type,
@@ -2220,7 +2219,7 @@
         renewalDate: card.renewalDate || '',
         notes: card.notes || '',
         themeId: card.themeId || theme.id,
-        backgroundColor: card.backgroundColor || theme.background,
+        backgroundColor: legacyBackground.includes('gradient') ? theme.background : (card.backgroundColor || theme.background),
         accentColor: card.accentColor || theme.accent,
         cardImage: card.cardImage || null,
         soundId: card.soundId || 'bgm1',
@@ -2439,12 +2438,8 @@
     }
 
     function renderHeader() {
-      const map = {
-        cards: '像 Apple Wallet 一样滑卡、点卡、听音效，再把提醒放到单独模块里。',
-        reminders: '提醒只放在这一页，主页不再承担提醒信息。',
-        settings: '设置页合并归档、备份、通知和全局偏好。'
-      };
-      document.getElementById('headerSubtitle').textContent = map[state.activeTab];
+      const subtitle = document.getElementById('headerSubtitle');
+      if (subtitle) subtitle.textContent = '';
     }
 
     function renderCardsTab() {
@@ -2727,9 +2722,13 @@
       document.getElementById(state.activeTab + 'Tab').classList.add('active');
 
       document.querySelectorAll('.nav-btn').forEach((btn) => btn.classList.remove('active'));
-      if (state.activeTab === 'cards') document.getElementById('navCards').classList.add('active');
-      if (state.activeTab === 'reminders') document.getElementById('navReminders').classList.add('active');
-      if (state.activeTab === 'settings') document.getElementById('navSettings').classList.add('active');
+      if (state.chatOpen) {
+        document.getElementById('navChat').classList.add('active');
+      } else {
+        if (state.activeTab === 'cards') document.getElementById('navCards').classList.add('active');
+        if (state.activeTab === 'reminders') document.getElementById('navReminders').classList.add('active');
+        if (state.activeTab === 'settings') document.getElementById('navSettings').classList.add('active');
+      }
 
       document.getElementById('viewTabStack').classList.toggle('active', state.cardView === 'stack');
       document.getElementById('viewTabList').classList.toggle('active', state.cardView === 'list');
@@ -2755,6 +2754,8 @@
 
     function switchTab(tab) {
       state.activeTab = tab;
+      state.chatOpen = false;
+      document.getElementById('chatPanel').classList.remove('active');
       renderApp();
       playUiFeedback();
     }
@@ -3584,6 +3585,7 @@
     function openChat() {
       state.chatOpen = true;
       document.getElementById('chatPanel').classList.add('active');
+      updateNav();
       setTimeout(() => document.getElementById('chatInput').focus(), 100);
       playUiFeedback();
     }
@@ -3591,6 +3593,7 @@
     function closeChat() {
       state.chatOpen = false;
       document.getElementById('chatPanel').classList.remove('active');
+      updateNav();
     }
 
     function askSuggestion(text) {
